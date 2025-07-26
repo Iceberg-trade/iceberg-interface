@@ -1,5 +1,5 @@
-import { Input, Modal, Button, Spin, message } from 'antd'
-import { DownOutlined } from '@ant-design/icons'
+import { Input, Button, Spin, message } from 'antd'
+import { CopyOutlined } from '@ant-design/icons'
 import { useState } from 'react'
 import tokenList from '../tokenList.json'
 import { useSignMessage } from 'wagmi'
@@ -11,6 +11,7 @@ function Deposit({ onNext, isConnected, address }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [searchToken, setSearchToken] = useState('')
+  const [isGeneratingSecret, setIsGeneratingSecret] = useState(false)
   const [messageApi, contextHolder] = message.useMessage()
   
   const { signMessage } = useSignMessage({
@@ -37,6 +38,38 @@ function Deposit({ onNext, isConnected, address }) {
       setIsLoading(false)
     }
   })
+
+  const generateSecret = () => {
+    setIsGeneratingSecret(true)
+    
+    // 使用本地加密安全的方法生成唯一secret
+    let generatedSecret
+    
+    if (window.crypto && window.crypto.randomUUID) {
+      // 现代浏览器支持crypto.randomUUID()
+      generatedSecret = window.crypto.randomUUID()
+    } else if (window.crypto && window.crypto.getRandomValues) {
+      // 使用crypto.getRandomValues()生成更安全的随机数
+      const array = new Uint8Array(16)
+      window.crypto.getRandomValues(array)
+      generatedSecret = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('')
+    } else {
+      // 降级方案：使用时间戳和高质量随机数组合
+      const timestamp = Date.now().toString(36)
+      const randomPart1 = Math.random().toString(36).substring(2, 15)
+      const randomPart2 = Math.random().toString(36).substring(2, 15)
+      generatedSecret = `${timestamp}-${randomPart1}-${randomPart2}`
+    }
+    
+    setSecret(generatedSecret)
+    messageApi.success('Secret generated successfully! Please save it for withdrawal.')
+    setIsGeneratingSecret(false)
+  }
+
+  const copySecret = () => {
+    navigator.clipboard.writeText(secret)
+    messageApi.success('Secret copied to clipboard!')
+  }
 
   const isFormValid = address && tokenAmount && secret && selectedToken
 
@@ -154,14 +187,49 @@ function Deposit({ onNext, isConnected, address }) {
           </div>
 
           <div style={{ marginBottom: '20px' }}>
-            <div style={{ marginBottom: '8px', fontSize: '14px', color: '#8B949E' }}>
-              Secret Code
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexDirection: 'column' }}>
+              {!secret ? (
+                <Button 
+                  onClick={generateSecret}
+                  loading={isGeneratingSecret}
+                  block
+                  size="large"
+                  type="primary"
+                  style={{ marginBottom: '8px' }}
+                >
+                  Generate Secret Code
+                </Button>
+              ) : (
+                <div style={{ width: '100%' }}>
+                  <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', alignItems: 'center' }}>
+                    <Input.Password 
+                      value={secret} 
+                      readOnly
+                      style={{ flex: 1 }}
+                    />
+                    <Button 
+                      icon={<CopyOutlined />} 
+                      onClick={copySecret}
+                      title="Copy secret"
+                      size="large"
+                      type="primary"
+                    />
+                  </div>
+                  <div style={{ 
+                    fontSize: '12px', 
+                    color: '#ff4d4f', 
+                    background: '#fff2f0', 
+                    padding: '8px 12px', 
+                    borderRadius: '6px', 
+                    border: '1px solid #ffccc7',
+                    textAlign: 'center',
+                    fontWeight: '500'
+                  }}>
+                    💾 Please save this secret code! You will need it for withdrawal.
+                  </div>
+                </div>
+              )}
             </div>
-            <Input.Password 
-              placeholder='Enter your secret code' 
-              value={secret} 
-              onChange={(e) => setSecret(e.target.value)}
-            />
           </div>
         </div>
 

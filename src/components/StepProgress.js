@@ -1,4 +1,5 @@
 import { Steps } from 'antd'
+import { CheckOutlined } from '@ant-design/icons'
 
 function StepProgress({ currentStep, completedSteps }) {
   const steps = [
@@ -28,7 +29,9 @@ function StepProgress({ currentStep, completedSteps }) {
         items={steps.map((step, index) => ({
           ...step,
           status: completedSteps.includes(index) ? 'finish' : 
-                 index === currentStep ? 'process' : 'wait'
+                 index === currentStep ? 'process' : 'wait',
+          icon: completedSteps.includes(index) ? 
+            <CheckOutlined style={{ color: '#52c41a' }} /> : undefined
         }))}
       />
     </div>
