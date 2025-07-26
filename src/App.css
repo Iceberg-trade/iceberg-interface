@@ -1,0 +1,561 @@
+.App {
+  text-align: center;
+  background-color: #0D111C;
+  min-height: 100vh;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', sans-serif;
+}
+
+header {
+  height: 100px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 50px;
+  padding-right: 50px;
+  background-color: #0E111B;
+  border-bottom: 1px solid #21273a;
+}
+
+.logo{
+  width: 40px;
+  height: 40px;
+  padding-right: 20px;
+}
+
+.eth{
+  width: 20px;
+  height: 20px;
+  padding-right: 10px;
+
+}
+
+.leftH {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.rightH {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20px;
+}
+
+.headerItem {
+  padding: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
+  border-radius: 5px;
+  font-weight: 500;
+  transition: 0.3s;
+  display: flex;
+  align-items: center;
+}
+
+.headerItem:hover {
+  background-color: rgb(34, 42, 58);
+  cursor: pointer;
+}
+
+.connectButton {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 12px 24px;
+  border-radius: 25px;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: none;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.connectButton:hover {
+  cursor: pointer;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+.mainWindow {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.link {
+  text-decoration: none;
+  color: white;
+}
+
+.tradeBox {
+  width: 420px;
+  background-color: #131A2A;
+  border: 1px solid #293249;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 24px;
+  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04), 0px 24px 32px rgba(0, 0, 0, 0.01);
+  color: #FFFFFF;
+}
+
+
+.tradeBoxHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 98%;
+  margin-bottom: 20px;
+}
+
+.tradeBoxHeader h4 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.cog {
+  color: #51586f;
+  transition: 0.3s;
+}
+
+.cog:hover {
+  color: white;
+  rotate: 90deg;
+  cursor: pointer;
+}
+
+.switchButton {
+  position: absolute;
+  background-color: #131A2A;
+  width: 25px;
+  height: 25px;
+  top: 90px;
+  left: 180px;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  border-radius: 8px;
+  color: #8B949E;
+  border: 2px solid #0D111C;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.dollarAmount {
+  position: absolute;
+  top: 75px;
+  left: 14px;
+  font-size: 10px;
+  color: #5F6783;
+}
+
+.switchButton:hover {
+  color: #FFFFFF;
+  cursor: pointer;
+  background-color: #293249;
+}
+
+.inputs {
+  position: relative;
+  min-height: 200px;
+}
+
+
+.assetLogo {
+  height: 22px;
+  margin-left: 5px;
+}
+
+.swapButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #2172E5;
+  width: calc(100%);
+  height: 64px;
+  font-size: 20px;
+  border-radius: 20px;
+  color: white;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  border: none;
+  cursor: pointer;
+}
+
+.swapButton[disabled] {
+  background-color: #2C2F36;
+  opacity: 0.5;
+  color: #565A69;
+  cursor: not-allowed;
+}
+
+.swapButton[disabled]:hover {
+  background-color: #2C2F36;
+  cursor: not-allowed;
+}
+
+.swapButton:hover {
+  background-color: #1C5FD6;
+}
+
+.tokenLogo {
+  height: 40px;
+  width: 40px;
+}
+
+/* Original 1inch Modal */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  border-top: 1px solid #363e54;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: #0E111B;
+  border: 2px solid #21273a;
+  border-radius: 15px;
+  max-width: 420px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #21273a;
+}
+
+.modalHeader h4 {
+  color: white;
+  margin: 0;
+  font-size: 18px;
+}
+
+.modalClose {
+  color: #51586f;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.modalClose:hover {
+  color: white;
+}
+
+.tokenChoice {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding-left: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.tokenChoice:hover {
+  cursor: pointer;
+  background-color: #1f2639;
+}
+
+.tokenName {
+  margin-left: 10px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.tokenTicker {
+  margin-left: 10px;
+  font-size: 13px;
+  font-weight: 300;
+  color: #51596f;
+}
+
+.tokenLogo {
+  height: 40px;
+  width: 40px;
+}
+
+.pulsating-img-container {
+  position: relative;
+  display: inline-block;
+}
+
+
+.pulsating-img-container::after {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 200px;
+  height: 300px;
+  top: 0;
+  left: 0;
+  border-radius: 10px;
+  animation: pulsate 1s ease-out;
+  animation-iteration-count: infinite;
+  opacity: 0;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+@keyframes pulsate {
+  0% {
+    transform: scale(0.1, 0.1);
+    opacity: 0;
+  }
+  
+  50% {
+    opacity: 1;
+  }
+  
+  100% {
+    transform: scale(1.2, 1.2);
+    opacity: 0;
+  }
+}
+
+/* 1inch Style Input Container */
+.inputContainer {
+  position: relative;
+  background-color: #212429;
+  border: 1px solid #40444F;
+  border-radius: 16px;
+  height: 64px;
+  transition: border-color 0.2s ease;
+}
+
+.inputContainer:hover {
+  border-color: #565A69;
+}
+
+.inputContainer:focus-within {
+  border-color: #2172E5;
+}
+
+/* Original 1inch Token Amount Input */
+.tokenAmountInput {
+  padding: 20px 0px;  
+  background: none;
+  border: none;
+  color: rgb(255, 255, 255);
+  font-size: 40px;
+  font-weight: 500;
+  outline: none;
+  border-radius: 20px;
+  width: 100%;
+  height: 64px;
+  margin-bottom: 20px;
+}
+
+.tokenAmountInput::placeholder {
+  color: rgb(86, 90, 105);
+}
+
+/* Original 1inch Asset Selector */
+.assetOne {
+  position: absolute;
+  min-width: 50px;
+  height: 30px;
+  background-color: #3a4157;
+  top: 36px;
+  right: 20px;
+  border-radius: 100px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 5px;
+  font-weight: bold;
+  font-size: 17px;
+  padding-right: 8px;
+  transition: 0.3s;
+  cursor: pointer;
+  color: white;
+}
+
+.assetTwo {
+  position: absolute;
+  min-width: 50px;
+  height: 30px;
+  background-color: #3a4157;
+  top: 140px;
+  right: 20px;
+  border-radius: 100px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 5px;
+  font-weight: bold;
+  font-size: 17px;
+  padding-right: 8px;
+  transition: 0.3s;
+  cursor: pointer;
+  color: white;
+}
+
+.assetOne:hover{
+  cursor: pointer;
+  background-color: #5e68a6;
+}
+
+.assetTwo:hover{
+  cursor: pointer;
+  background-color: #5e68a6;
+}
+
+.logo{
+  width: 40px;
+  height: 40px;
+  padding-right: 20px;
+}
+
+/* Custom Ant Design Input Styles */
+.ant-input, .ant-input-password {
+  background-color: #212429 !important;
+  border: 1px solid #40444F !important;
+  border-radius: 16px !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  color: #FFFFFF !important;
+  padding: 16px !important;
+  height: 64px !important;
+}
+
+.ant-input:focus, .ant-input:hover, .ant-input-password:focus, .ant-input-password:hover {
+  border-color: #2172E5 !important;
+  box-shadow: 0 0 0 1px #2172E5 !important;
+}
+
+.ant-input[disabled] {
+  background-color: #1B1E25 !important;
+  color: #565A69 !important;
+  cursor: not-allowed !important;
+  border-color: #2C2F36 !important;
+}
+
+/* Input Password specific styles */
+.ant-input-password .ant-input {
+  background-color: #212429 !important;
+  border: none !important;
+  padding: 0 !important;
+  height: auto !important;
+}
+
+.ant-input-affix-wrapper {
+  background-color: #212429 !important;
+  border: 1px solid #40444F !important;
+  border-radius: 16px !important;
+  padding: 16px !important;
+  height: 64px !important;
+}
+
+.ant-input-affix-wrapper:focus, .ant-input-affix-wrapper:hover {
+  border-color: #2172E5 !important;
+  box-shadow: 0 0 0 1px #2172E5 !important;
+}
+
+.ant-input-affix-wrapper .ant-input {
+  color: #FFFFFF !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+}
+
+/* Steps Progress Styling */
+.ant-steps .ant-steps-item-finish .ant-steps-item-icon {
+  background-color: #667eea !important;
+  border-color: #667eea !important;
+}
+
+.ant-steps .ant-steps-item-process .ant-steps-item-icon {
+  background-color: #667eea !important;
+  border-color: #667eea !important;
+}
+
+.ant-steps .ant-steps-item-finish .ant-steps-item-title::after {
+  background-color: #667eea !important;
+}
+
+.ant-steps .ant-steps-item-title {
+  color: white !important;
+}
+
+.ant-steps .ant-steps-item-description {
+  color: #999 !important;
+}
+
+.ant-steps .ant-steps-item-wait .ant-steps-item-icon {
+  background-color: #21273a !important;
+  border-color: #21273a !important;
+}
+
+.ant-steps .ant-steps-item-wait .ant-steps-item-icon > .ant-steps-icon {
+  color: #666 !important;
+}
+
+/* Modal Styling - 1inch Style */
+.ant-modal-content {
+  background-color: #131A2A !important;
+  border-radius: 20px !important;
+  border: 1px solid #293249 !important;
+  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04), 0px 24px 32px rgba(0, 0, 0, 0.01) !important;
+}
+
+.ant-modal-header {
+  background-color: #131A2A !important;
+  border-bottom: 1px solid #293249 !important;
+  border-radius: 20px 20px 0 0 !important;
+  padding: 20px 24px 16px 24px !important;
+}
+
+.ant-modal-title {
+  color: #FFFFFF !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+}
+
+.ant-modal-close {
+  color: #8B949E !important;
+}
+
+.ant-modal-close:hover {
+  color: #FFFFFF !important;
+}
+
+.ant-modal-body {
+  padding: 0 !important;
+  max-height: 400px !important;
+  overflow-y: auto !important;
+}
+
+/* Button Styling */
+.ant-btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  border-radius: 15px !important;
+  height: 45px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+  transition: all 0.3s ease !important;
+}
+
+.ant-btn-primary:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6) !important;
+}
