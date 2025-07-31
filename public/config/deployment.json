@@ -1,0 +1,8 @@
+{
+  "contracts": {
+    "Iceberg": "0xE0aFa53dD37432265dd68FdbC91a06B12F997380"
+  },
+  "network": "arbitrum",
+  "chainId": 42161,
+  "timestamp": "2024-01-01T00:00:00Z"
+}

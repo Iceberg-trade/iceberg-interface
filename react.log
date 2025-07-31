@@ -1,0 +1,524 @@
+
+> dex@0.1.0 start
+> react-scripts start
+
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+(node:65144) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:65144) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+Starting the development server...
+
+Compiled successfully!
+
+You can now view dex in the browser.
+
+  Local:            http://localhost:3000
+  On Your Network:  http://192.168.1.6:3000
+
+Note that the development build is not optimized.
+To create a production build, use npm run build.
+
+webpack compiled successfully
+Compiling...
+Compiled with warnings.
+
+[eslint] 
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+webpack compiled with 1 warning
+Compiling...
+Compiled with warnings.
+
+[eslint] 
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+webpack compiled with 1 warning
+Compiling...
+Compiled with warnings.
+
+[eslint] 
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+webpack compiled with 1 warning
+Compiling...
+Compiled with warnings.
+
+[eslint] 
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+webpack compiled with 1 warning
+Compiling...
+Compiled with warnings.
+
+[eslint] 
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+webpack compiled with 1 warning
+Compiling...
+Compiled with warnings.
+
+[eslint] 
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+webpack compiled with 1 warning
+Compiling...
+Compiled with warnings.
+
+[eslint] 
+src/components/SwapStep.js
+  Line 3:31:   'useCallback' is defined but never used                                                                                                     no-unused-vars
+  Line 96:9:   'get1inchPrice' is assigned a value but never used                                                                                          no-unused-vars
+  Line 150:6:  React Hook useEffect has missing dependencies: 'depositData.tokenA' and 'getRealPrice'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/components/SwapStep.js
+  Line 3:31:   'useCallback' is defined but never used                                                                                                     no-unused-vars
+  Line 96:9:   'get1inchPrice' is assigned a value but never used                                                                                          no-unused-vars
+  Line 150:6:  React Hook useEffect has missing dependencies: 'depositData.tokenA' and 'getRealPrice'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+webpack compiled with 1 warning
+Compiling...
+Compiled with warnings.
+
+[eslint] 
+src/components/SwapStep.js
+  Line 3:31:   'useCallback' is defined but never used                                                                                                     no-unused-vars
+  Line 96:9:   'get1inchPrice' is assigned a value but never used                                                                                          no-unused-vars
+  Line 150:6:  React Hook useEffect has missing dependencies: 'depositData.tokenA' and 'getRealPrice'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/components/SwapStep.js
+  Line 3:31:   'useCallback' is defined but never used                                                                                                     no-unused-vars
+  Line 96:9:   'get1inchPrice' is assigned a value but never used                                                                                          no-unused-vars
+  Line 150:6:  React Hook useEffect has missing dependencies: 'depositData.tokenA' and 'getRealPrice'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+webpack compiled with 1 warning
+Compiling...
+Compiled with warnings.
+
+[eslint] 
+src/components/SwapStep.js
+  Line 3:31:   'useCallback' is defined but never used                                                                                                     no-unused-vars
+  Line 96:9:   'get1inchPrice' is assigned a value but never used                                                                                          no-unused-vars
+  Line 150:6:  React Hook useEffect has missing dependencies: 'depositData.tokenA' and 'getRealPrice'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+src/components/Withdraw.js
+  Line 3:20:  'useEffect' is defined but never used                no-unused-vars
+  Line 4:10:  'ethers' is defined but never used                   no-unused-vars
+  Line 5:10:  'useProvider' is defined but never used              no-unused-vars
+  Line 5:23:  'useSigner' is defined but never used                no-unused-vars
+  Line 6:10:  'executeIcebergWithdraw' is defined but never used   no-unused-vars
+  Line 6:34:  'checkWithdrawableAmount' is defined but never used  no-unused-vars
+
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+src/utils/icebergWithdraw.js
+  Line 8:8:   'axios' is defined but never used                 no-unused-vars
+  Line 31:5:  'userAddress' is assigned a value but never used  no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/components/SwapStep.js
+  Line 3:31:   'useCallback' is defined but never used                                                                                                     no-unused-vars
+  Line 96:9:   'get1inchPrice' is assigned a value but never used                                                                                          no-unused-vars
+  Line 150:6:  React Hook useEffect has missing dependencies: 'depositData.tokenA' and 'getRealPrice'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+src/components/Withdraw.js
+  Line 3:20:  'useEffect' is defined but never used                no-unused-vars
+  Line 4:10:  'ethers' is defined but never used                   no-unused-vars
+  Line 5:10:  'useProvider' is defined but never used              no-unused-vars
+  Line 5:23:  'useSigner' is defined but never used                no-unused-vars
+  Line 6:10:  'executeIcebergWithdraw' is defined but never used   no-unused-vars
+  Line 6:34:  'checkWithdrawableAmount' is defined but never used  no-unused-vars
+
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+src/utils/icebergWithdraw.js
+  Line 8:8:   'axios' is defined but never used                 no-unused-vars
+  Line 31:5:  'userAddress' is assigned a value but never used  no-unused-vars
+
+webpack compiled with 1 warning
+Compiling...
+Compiled with warnings.
+
+[eslint] 
+src/components/SwapStep.js
+  Line 3:31:   'useCallback' is defined but never used                                                                                                     no-unused-vars
+  Line 96:9:   'get1inchPrice' is assigned a value but never used                                                                                          no-unused-vars
+  Line 150:6:  React Hook useEffect has missing dependencies: 'depositData.tokenA' and 'getRealPrice'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+src/components/Withdraw.js
+  Line 3:20:   'useEffect' is defined but never used                     no-unused-vars
+  Line 4:10:   'ethers' is defined but never used                        no-unused-vars
+  Line 6:10:   'executeIcebergWithdraw' is defined but never used        no-unused-vars
+  Line 6:34:   'checkWithdrawableAmount' is defined but never used       no-unused-vars
+  Line 12:10:  'proof' is assigned a value but never used                no-unused-vars
+  Line 12:17:  'setProof' is assigned a value but never used             no-unused-vars
+  Line 15:10:  'withdrawableInfo' is assigned a value but never used     no-unused-vars
+  Line 15:28:  'setWithdrawableInfo' is assigned a value but never used  no-unused-vars
+  Line 17:9:   'provider' is assigned a value but never used             no-unused-vars
+  Line 18:17:  'signer' is assigned a value but never used               no-unused-vars
+
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+src/utils/icebergWithdraw.js
+  Line 8:8:   'axios' is defined but never used                 no-unused-vars
+  Line 31:5:  'userAddress' is assigned a value but never used  no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/components/SwapStep.js
+  Line 3:31:   'useCallback' is defined but never used                                                                                                     no-unused-vars
+  Line 96:9:   'get1inchPrice' is assigned a value but never used                                                                                          no-unused-vars
+  Line 150:6:  React Hook useEffect has missing dependencies: 'depositData.tokenA' and 'getRealPrice'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+src/components/Withdraw.js
+  Line 3:20:   'useEffect' is defined but never used                     no-unused-vars
+  Line 4:10:   'ethers' is defined but never used                        no-unused-vars
+  Line 6:10:   'executeIcebergWithdraw' is defined but never used        no-unused-vars
+  Line 6:34:   'checkWithdrawableAmount' is defined but never used       no-unused-vars
+  Line 12:10:  'proof' is assigned a value but never used                no-unused-vars
+  Line 12:17:  'setProof' is assigned a value but never used             no-unused-vars
+  Line 15:10:  'withdrawableInfo' is assigned a value but never used     no-unused-vars
+  Line 15:28:  'setWithdrawableInfo' is assigned a value but never used  no-unused-vars
+  Line 17:9:   'provider' is assigned a value but never used             no-unused-vars
+  Line 18:17:  'signer' is assigned a value but never used               no-unused-vars
+
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+src/utils/icebergWithdraw.js
+  Line 8:8:   'axios' is defined but never used                 no-unused-vars
+  Line 31:5:  'userAddress' is assigned a value but never used  no-unused-vars
+
+webpack compiled with 1 warning
+Compiling...
+Compiled with warnings.
+
+[eslint] 
+src/components/SwapStep.js
+  Line 3:31:   'useCallback' is defined but never used                                                                                                     no-unused-vars
+  Line 96:9:   'get1inchPrice' is assigned a value but never used                                                                                          no-unused-vars
+  Line 150:6:  React Hook useEffect has missing dependencies: 'depositData.tokenA' and 'getRealPrice'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+src/components/Withdraw.js
+  Line 4:10:   'ethers' is defined but never used                  no-unused-vars
+  Line 6:10:   'executeIcebergWithdraw' is defined but never used  no-unused-vars
+  Line 12:10:  'proof' is assigned a value but never used          no-unused-vars
+  Line 12:17:  'setProof' is assigned a value but never used       no-unused-vars
+  Line 18:17:  'signer' is assigned a value but never used         no-unused-vars
+
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+src/utils/icebergWithdraw.js
+  Line 8:8:   'axios' is defined but never used                 no-unused-vars
+  Line 31:5:  'userAddress' is assigned a value but never used  no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/components/SwapStep.js
+  Line 3:31:   'useCallback' is defined but never used                                                                                                     no-unused-vars
+  Line 96:9:   'get1inchPrice' is assigned a value but never used                                                                                          no-unused-vars
+  Line 150:6:  React Hook useEffect has missing dependencies: 'depositData.tokenA' and 'getRealPrice'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+src/components/Withdraw.js
+  Line 4:10:   'ethers' is defined but never used                  no-unused-vars
+  Line 6:10:   'executeIcebergWithdraw' is defined but never used  no-unused-vars
+  Line 12:10:  'proof' is assigned a value but never used          no-unused-vars
+  Line 12:17:  'setProof' is assigned a value but never used       no-unused-vars
+  Line 18:17:  'signer' is assigned a value but never used         no-unused-vars
+
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+src/utils/icebergWithdraw.js
+  Line 8:8:   'axios' is defined but never used                 no-unused-vars
+  Line 31:5:  'userAddress' is assigned a value but never used  no-unused-vars
+
+webpack compiled with 1 warning
+Compiling...
+Compiled with warnings.
+
+[eslint] 
+src/components/SwapStep.js
+  Line 3:31:   'useCallback' is defined but never used                                                                                                     no-unused-vars
+  Line 96:9:   'get1inchPrice' is assigned a value but never used                                                                                          no-unused-vars
+  Line 150:6:  React Hook useEffect has missing dependencies: 'depositData.tokenA' and 'getRealPrice'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+src/components/Withdraw.js
+  Line 4:10:   'ethers' is defined but never used                  no-unused-vars
+  Line 6:10:   'executeIcebergWithdraw' is defined but never used  no-unused-vars
+  Line 12:17:  'setProof' is assigned a value but never used       no-unused-vars
+  Line 18:17:  'signer' is assigned a value but never used         no-unused-vars
+
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+src/utils/icebergWithdraw.js
+  Line 8:8:   'axios' is defined but never used                 no-unused-vars
+  Line 31:5:  'userAddress' is assigned a value but never used  no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/components/SwapStep.js
+  Line 3:31:   'useCallback' is defined but never used                                                                                                     no-unused-vars
+  Line 96:9:   'get1inchPrice' is assigned a value but never used                                                                                          no-unused-vars
+  Line 150:6:  React Hook useEffect has missing dependencies: 'depositData.tokenA' and 'getRealPrice'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+src/components/Withdraw.js
+  Line 4:10:   'ethers' is defined but never used                  no-unused-vars
+  Line 6:10:   'executeIcebergWithdraw' is defined but never used  no-unused-vars
+  Line 12:17:  'setProof' is assigned a value but never used       no-unused-vars
+  Line 18:17:  'signer' is assigned a value but never used         no-unused-vars
+
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+src/utils/icebergWithdraw.js
+  Line 8:8:   'axios' is defined but never used                 no-unused-vars
+  Line 31:5:  'userAddress' is assigned a value but never used  no-unused-vars
+
+webpack compiled with 1 warning
+Compiling...
+Compiled with warnings.
+
+[eslint] 
+src/components/SwapStep.js
+  Line 3:31:   'useCallback' is defined but never used                                                                                                     no-unused-vars
+  Line 96:9:   'get1inchPrice' is assigned a value but never used                                                                                          no-unused-vars
+  Line 150:6:  React Hook useEffect has missing dependencies: 'depositData.tokenA' and 'getRealPrice'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+src/components/Withdraw.js
+  Line 4:10:  'ethers' is defined but never used  no-unused-vars
+
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+src/utils/icebergWithdraw.js
+  Line 8:8:   'axios' is defined but never used                 no-unused-vars
+  Line 31:5:  'userAddress' is assigned a value but never used  no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/components/SwapStep.js
+  Line 3:31:   'useCallback' is defined but never used                                                                                                     no-unused-vars
+  Line 96:9:   'get1inchPrice' is assigned a value but never used                                                                                          no-unused-vars
+  Line 150:6:  React Hook useEffect has missing dependencies: 'depositData.tokenA' and 'getRealPrice'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+src/components/Withdraw.js
+  Line 4:10:  'ethers' is defined but never used  no-unused-vars
+
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+src/utils/icebergWithdraw.js
+  Line 8:8:   'axios' is defined but never used                 no-unused-vars
+  Line 31:5:  'userAddress' is assigned a value but never used  no-unused-vars
+
+webpack compiled with 1 warning
+Compiling...
+Compiled with warnings.
+
+[eslint] 
+src/components/SwapStep.js
+  Line 3:31:   'useCallback' is defined but never used                                                                                                     no-unused-vars
+  Line 96:9:   'get1inchPrice' is assigned a value but never used                                                                                          no-unused-vars
+  Line 150:6:  React Hook useEffect has missing dependencies: 'depositData.tokenA' and 'getRealPrice'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+src/utils/icebergWithdraw.js
+  Line 8:8:   'axios' is defined but never used                 no-unused-vars
+  Line 31:5:  'userAddress' is assigned a value but never used  no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/components/SwapStep.js
+  Line 3:31:   'useCallback' is defined but never used                                                                                                     no-unused-vars
+  Line 96:9:   'get1inchPrice' is assigned a value but never used                                                                                          no-unused-vars
+  Line 150:6:  React Hook useEffect has missing dependencies: 'depositData.tokenA' and 'getRealPrice'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+src/utils/icebergWithdraw.js
+  Line 8:8:   'axios' is defined but never used                 no-unused-vars
+  Line 31:5:  'userAddress' is assigned a value but never used  no-unused-vars
+
+webpack compiled with 1 warning
+Compiling...
+Compiled with warnings.
+
+[eslint] 
+src/components/SwapStep.js
+  Line 3:31:   'useCallback' is defined but never used                                                                                                     no-unused-vars
+  Line 96:9:   'get1inchPrice' is assigned a value but never used                                                                                          no-unused-vars
+  Line 150:6:  React Hook useEffect has missing dependencies: 'depositData.tokenA' and 'getRealPrice'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+src/utils/icebergWithdraw.js
+  Line 30:5:  'userAddress' is assigned a value but never used  no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/components/SwapStep.js
+  Line 3:31:   'useCallback' is defined but never used                                                                                                     no-unused-vars
+  Line 96:9:   'get1inchPrice' is assigned a value but never used                                                                                          no-unused-vars
+  Line 150:6:  React Hook useEffect has missing dependencies: 'depositData.tokenA' and 'getRealPrice'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+src/utils/icebergSwap.js
+  Line 74:9:   'swapParams' is assigned a value but never used  no-unused-vars
+  Line 112:9:  'desc' is assigned a value but never used        no-unused-vars
+  Line 113:9:  'innerData' is assigned a value but never used   no-unused-vars
+
+src/utils/icebergWithdraw.js
+  Line 30:5:  'userAddress' is assigned a value but never used  no-unused-vars
+
+webpack compiled with 1 warning
