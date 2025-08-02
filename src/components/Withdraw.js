@@ -3,6 +3,8 @@ import { CheckCircleOutlined } from '@ant-design/icons'
 import { useState, useEffect } from 'react'
 import { useProvider, useSigner } from 'wagmi'
 import { executeIcebergWithdrawUsingProof, checkWithdrawableAmount } from '../utils/icebergWithdraw'
+import { getIcebergAddress } from '../utils/getDepositAssets'
+import { ethers } from 'ethers'
 
 function Withdraw({ swapData, isConnected, address }) {
   const [withdrawAddress, setWithdrawAddress] = useState('')
@@ -96,15 +98,26 @@ function Withdraw({ swapData, isConnected, address }) {
       console.log('💸 Starting withdrawal with secret:', secret)
       console.log('  recipientAddress:', withdrawAddress)
       
-      // Execute withdrawal without requiring pre-generated proof
-      const withdrawResult = await executeIcebergWithdrawUsingProof({
-        secret: secret,
-        recipientAddress: withdrawAddress,
-        signer,
-        provider,
-        userAddress: address,
-        swapData: swapData
-      })
+      // Get pool address
+      const poolAddress = await getIcebergAddress()
+      console.log('🏠 Pool address:', poolAddress)
+      
+      // Generate nullifier from secret (following icebergSwap.js logic)
+      const reversedSecret = secret.split('').reverse().join('')
+      console.log('🔄 Generating nullifier from reversed secret')
+      
+      // Convert reversed secret to BigNumber for calculation
+      const nullifier = ethers.BigNumber.from(ethers.utils.keccak256(ethers.utils.toUtf8Bytes(reversedSecret))).toString()
+      console.log('🔑 Generated nullifier:', nullifier)
+      
+      // Execute withdrawal with correct parameters
+      const withdrawResult = await executeIcebergWithdrawUsingProof(
+        poolAddress,
+        withdrawAddress,
+        nullifier,
+        secret,
+        signer
+      )
       
       messageApi.destroy()
       messageApi.success('Withdrawal executed successfully!')

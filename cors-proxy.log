@@ -1,6 +1,0 @@
-🚀 CORS Proxy server running on http://localhost:8080
-📡 Proxying 1inch API requests
-💡 Frontend can now call: http://localhost:8080/api/1inch/swap/v6.0/42161/tokens
-⚠️  Note: Using API v6.0 (v6.1 may not be available yet)
-(node:64874) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
-(Use `node --trace-deprecation ...` to show where the warning was created)
