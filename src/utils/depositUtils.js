@@ -1,4 +1,5 @@
 import { ethers } from 'ethers'
+const { poseidon2 } = require("poseidon-lite")
 
 // Iceberg 合约 ABI - 添加 deposit 方法
 const ICEBERG_ABI = [
@@ -52,151 +53,198 @@ export async function executeDeposit({
     console.log('👤 User address:', userAddress)
     console.log('💰 User balance:', ethers.utils.formatEther(balance), 'ETH')
 
-    // 余额检查
-    const minBalance = ethers.utils.parseEther('0.0002')
+    // 余额检查 - 降低最低ETH要求
+    const minBalance = ethers.utils.parseEther('0.0001') // 降低到0.0001 ETH
     if (balance.lt(minBalance)) {
-      throw new Error('Insufficient balance, at least 0.0002 ETH required for gas fees')
+      const currentBalance = ethers.utils.formatEther(balance)
+      throw new Error(`Insufficient ETH for gas fees. Current: ${currentBalance} ETH, Required: at least 0.0001 ETH. Please add ETH to your wallet.`)
     }
 
     onProgress('Connecting to contract...')
     
-    // 🎭 模拟合约连接和配置获取
-    console.log('🎭 Simulating contract connection and config retrieval...')
+    // 连接到Iceberg合约
+    console.log('📡 Connecting to Iceberg contract...')
     const pool = new ethers.Contract(poolAddress, ICEBERG_ABI, signer)
 
-    // 使用selectedAsset中已有的配置信息，避免真实合约调用
+    // 使用selectedAsset中已有的配置信息
     const requestedId = selectedAsset.configId
     
-    // 模拟config对象，使用selectedAsset中的数据
+    // 使用selectedAsset中的真实配置数据
     const config = {
       tokenIn: selectedAsset.tokenAddress || ethers.constants.AddressZero,
-      fixedAmount: ethers.BigNumber.from(selectedAsset.fixedAmount || '1000000000000000000') // 默认1 ETH
+      fixedAmount: ethers.BigNumber.from(selectedAsset.fixedAmount || '1000000000000000000')
     }
     
-    console.log('📋 使用的 SwapConfig (模拟):')
+    console.log('📋 使用的 SwapConfig:')
     console.log('  ConfigID:', requestedId)
     console.log('  TokenIn:', config.tokenIn === ethers.constants.AddressZero ? 'ETH' : config.tokenIn)
     console.log('  TokenName:', selectedAsset.tokenSymbol)
     console.log('  FixedAmount:', selectedAsset.fixedAmountFormatted, selectedAsset.tokenSymbol)
-    console.log('🎭 Note: Using mock config data for simulation')
+    console.log('✅ Config is valid, ready to deposit')
 
     onProgress('Generating commitment data...')
     
-    // 生成 nullifier 和处理 secret - 按照 scripts/mainnet/deposit.ts 逻辑
-    console.log('🔐 Generate commitment data...')
+    // 按照用户要求：secret = 用户输入的secret，nullifier = secret字符串的倒置
+    console.log('🔐 Generate commitment data using user secret...')
+    console.log('🔧 User input secret:', secret)
     
-    // 按照scripts逻辑：nullifier 为 secret 字符串的倒置，然后转换为bytes31
-    const nullifierString = secret.split('').reverse().join('')
+    // 计算nullifier（secret字符串的倒置）
+    const reversedSecret = secret.split('').reverse().join('')
+    console.log('🔧 Nullifier (reversed secret):', reversedSecret)
     
-    // 将字符串转换为31字节的二进制数据（模拟scripts中的randomBytes(31)）
-    const secretHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(secret))
-    const nullifierHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(nullifierString))
+    // 转换为BigInt用于poseidon计算
+    let secretBigInt, nullifierBigInt
     
-    // 截取前31字节模拟randomBytes(31)的结果
-    const secretBytes31 = secretHash.slice(0, 64) // 32 bytes hex -> 31 bytes
-    const nullifierBytes31 = nullifierHash.slice(0, 64) // 32 bytes hex -> 31 bytes
+    // 对于UUID格式的secret，使用keccak256哈希
+    if (secret.match(/[^0-9]/)) {
+      console.log('📋 Using hash conversion for non-numeric secret')
+      const secretHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(secret))
+      const nullifierHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(reversedSecret))
+      secretBigInt = BigInt(secretHash)
+      nullifierBigInt = BigInt(nullifierHash)
+      console.log('  Secret hash:', secretHash)
+      console.log('  Nullifier hash:', nullifierHash)
+    } else {
+      // 对于纯数字secret，直接转换
+      console.log('📋 Using numeric conversion')
+      secretBigInt = BigInt(secret)
+      nullifierBigInt = BigInt(reversedSecret)
+    }
     
-    // 转换为BigNumber用于模拟poseidon2计算
-    const secretBN = ethers.BigNumber.from(secretBytes31)
-    const nullifierBN = ethers.BigNumber.from(nullifierBytes31)
+    console.log('  Secret BigInt:', secretBigInt.toString())
+    console.log('  Nullifier BigInt:', nullifierBigInt.toString())
     
-    // 临时使用keccak256模拟poseidon2([nullifier, secret])
-    // TODO: 在安装poseidon-lite后改为真正的poseidon2计算
-    const commitment = ethers.utils.keccak256(
-      ethers.utils.concat([
-        ethers.utils.hexZeroPad(nullifierBN.toHexString(), 32),
-        ethers.utils.hexZeroPad(secretBN.toHexString(), 32)
-      ])
-    )
+    // 计算commitment = poseidon2(nullifier, secret)
+    const commitment = poseidon2([
+      nullifierBigInt.toString(),
+      secretBigInt.toString()
+    ])
+    const commitmentHex = "0x" + ethers.BigNumber.from(commitment.toString()).toHexString().slice(2).padStart(64, '0')
 
-    console.log('🔑 Generated data:')
-    console.log('  Secret:', secret)
-    console.log('  Nullifier:', nullifierString)
-    console.log('  SecretBytes31:', secretBytes31)
-    console.log('  NullifierBytes31:', nullifierBytes31)
-    console.log('  Commitment:', commitment)
-    console.log('⚠️ Using keccak256 instead of poseidon2 - for testing only!')
+    console.log('🔑 Generated commitment data:')
+    console.log('  User secret:', secret)
+    console.log('  Nullifier (reversed):', reversedSecret)
+    console.log('  Secret BigInt:', secretBigInt.toString())
+    console.log('  Nullifier BigInt:', nullifierBigInt.toString())
+    console.log('  Commitment:', commitmentHex)
 
-    onProgress('Simulating gas estimation...')
+    // 对于ERC20代币，先检查并处理approve
+    if (config.tokenIn !== ethers.constants.AddressZero) {
+      const token = new ethers.Contract(config.tokenIn, ERC20_ABI, signer)
+      
+      console.log('🔍 Checking token allowance...')
+      const currentAllowance = await token.allowance(userAddress, poolAddress)
+      console.log('Current allowance:', ethers.utils.formatUnits(currentAllowance, selectedAsset.decimals))
+      console.log('Required amount:', ethers.utils.formatUnits(config.fixedAmount, selectedAsset.decimals))
+      
+      if (currentAllowance.lt(config.fixedAmount)) {
+        console.log('🔓 Need to approve token spend...')
+        onProgress('Approving token spend...')
+        const approveTx = await token.approve(poolAddress, config.fixedAmount)
+        await approveTx.wait()
+        console.log('✅ Approve completed')
+      } else {
+        console.log('✅ Sufficient allowance already exists')
+      }
+    }
+
+    onProgress('Estimating gas fees...')
     
-    // 🎭 模拟Gas预估 - 避免真实区块链调用
-    console.log('🎭 Simulating gas fee estimation...')
+    // Gas估算和费用计算
+    console.log('⛽ Estimating gas fees...')
+    let gasEstimate, gasPrice
     
-    // 模拟gas参数
-    const mockGasEstimate = ethers.BigNumber.from('150000') // 模拟gas估算
-    const mockGasPrice = ethers.utils.parseUnits('20', 'gwei') // 模拟gas价格
-    const mockEstimatedCost = mockGasEstimate.mul(mockGasPrice)
+    if (config.tokenIn === ethers.constants.AddressZero) {
+      // ETH deposit gas估算
+      gasEstimate = await pool.estimateGas.deposit(commitmentHex, requestedId, {
+        value: config.fixedAmount
+      })
+    } else {
+      // ERC20 deposit gas估算 - 现在应该有足够的allowance了
+      gasEstimate = await pool.estimateGas.deposit(commitmentHex, requestedId)
+    }
     
-    console.log('⛽ Mock estimated gas:', mockGasEstimate.toString())
-    console.log('⛽ Mock gas price:', ethers.utils.formatUnits(mockGasPrice, 'gwei'), 'Gwei')
-    console.log('⛽ Mock estimated cost:', ethers.utils.formatEther(mockEstimatedCost), 'ETH')
+    gasPrice = await signer.provider.getGasPrice()
+    const estimatedCost = gasEstimate.mul(gasPrice)
+    
+    console.log('⛽ Estimated gas:', gasEstimate.toString())
+    console.log('⛽ Gas price:', ethers.utils.formatUnits(gasPrice, 'gwei'), 'Gwei')
+    console.log('⛽ Estimated cost:', ethers.utils.formatEther(estimatedCost), 'ETH')
 
     // 安全确认信息
     const depositInfo = {
       network: network.name,
       depositAmount: selectedAsset.fixedAmountFormatted,
       tokenSymbol: selectedAsset.tokenSymbol,
-      estimatedCost: ethers.utils.formatEther(mockEstimatedCost),
+      estimatedCost: ethers.utils.formatEther(estimatedCost),
       userAddress,
       configId: requestedId
     }
 
-    console.log('🔒 Mock security confirmation:')
+    console.log('🔒 Security confirmation:')
     console.log('📍 Network:', depositInfo.network)
     console.log('💰 Deposit amount:', depositInfo.depositAmount, depositInfo.tokenSymbol)
-    console.log('⛽ Mock estimated cost:', depositInfo.estimatedCost, 'ETH')
-    console.log('🎭 Note: This is a simulation - no real transaction will be sent')
+    console.log('⛽ Estimated cost:', depositInfo.estimatedCost, 'ETH')
+    console.log('⚠️ This is a real transaction on mainnet, will consume real funds!')
 
-    onProgress('Simulating deposit transaction...')
+    onProgress('Executing deposit transaction...')
 
-    // 🎭 模拟交易执行 - 不发出真实交易
-    console.log('🎭 Simulating deposit transaction (no real blockchain transaction)...')
+    // 执行真实的deposit交易
+    console.log('💸 Execute mainnet deposit transaction...')
     
-    // 生成模拟交易hash
-    const mockTxHash = '0x' + Array.from({length: 64}, () => Math.floor(Math.random() * 16).toString(16)).join('')
-    console.log('📤 Mock transaction hash:', mockTxHash)
+    let tx
+    if (config.tokenIn === ethers.constants.AddressZero) {
+      // ETH deposit
+      tx = await pool.connect(signer).deposit(commitmentHex, requestedId, {
+        value: config.fixedAmount
+      })
+    } else {
+      // ERC20 deposit - approve已经在前面完成
+      tx = await pool.connect(signer).deposit(commitmentHex, requestedId)
+    }
+
+    console.log('📤 Transaction sent:', tx.hash)
     
     // 立即触发pending通知
-    onTransactionSent(mockTxHash)
+    onTransactionSent(tx.hash)
     
-    // 模拟交易确认延迟
+    // 等待交易确认
     onProgress('Waiting for transaction confirmation...')
-    console.log('⏳ Simulating transaction confirmation...')
+    console.log('⏳ Wait for transaction confirmation...')
     
-    await new Promise(resolve => setTimeout(resolve, 3000)) // 3秒延迟模拟确认
+    const receipt = await tx.wait()
     
-    // 模拟交易receipt
-    const mockReceipt = {
-      transactionHash: mockTxHash,
-      blockNumber: Math.floor(Math.random() * 1000000) + 18000000, // 模拟区块号
-      gasUsed: ethers.BigNumber.from('150000'), // 模拟gas使用量
-      status: 1 // 成功状态
+    console.log('✅ Deposit completed!')
+    console.log('📄 Transaction hash:', receipt.transactionHash)
+    console.log('⛽ Gas used:', receipt.gasUsed.toString())
+
+    // 检查事件
+    const depositEvent = receipt.events?.find((e) => e.event === "Deposit")
+    let eventInfo = {}
+    if (depositEvent) {
+      eventInfo = {
+        commitment: depositEvent.args.commitment,
+        leafIndex: depositEvent.args.leafIndex.toString(),
+        swapConfigId: depositEvent.args.swapConfigId.toString()
+      }
+      console.log('📊 Deposit event:', eventInfo)
     }
-    
-    console.log('✅ Mock deposit completed!')
-    console.log('📄 Mock transaction hash:', mockReceipt.transactionHash)
-    console.log('⛽ Mock gas used:', mockReceipt.gasUsed.toString())
 
-    // 模拟事件信息
-    const eventInfo = {
-      commitment: commitment,
-      leafIndex: Math.floor(Math.random() * 1000).toString(), // 模拟leafIndex
-      swapConfigId: requestedId.toString()
-    }
-    console.log('📊 Mock deposit event:', eventInfo)
+    // 检查merkle tree状态
+    const merkleRoot = await pool.getMerkleRoot()
+    console.log('🌲 Updated Merkle Root:', merkleRoot)
 
-    // 模拟merkle root
-    const mockMerkleRoot = '0x' + Array.from({length: 64}, () => Math.floor(Math.random() * 16).toString(16)).join('')
-    console.log('🌲 Mock merkle root:', mockMerkleRoot)
-
-    // 准备存款数据用于后续步骤 - 按照scripts/mainnet/deposit.ts格式
+    // 准备存款数据用于后续步骤 - 使用真实的secret和nullifier
     const depositData = {
       userA: userAddress, // 与scripts中的字段名一致
       swapConfigId: requestedId.toString(), // 转换为字符串与scripts一致
-      nullifier: nullifierBytes31, // 保存bytes31格式
-      secret: secretBytes31, // 保存bytes31格式
-      commitment,
-      transactionHash: mockReceipt.transactionHash,
+      // 使用真实的nullifier和secret值
+      nullifier: nullifierBigInt.toString(), // 保存BigInt字符串格式
+      secret: secretBigInt.toString(), // 保存BigInt字符串格式
+      nullifierHex: "0x" + nullifierBigInt.toString(16).padStart(64, '0'), // hex格式
+      secretHex: "0x" + secretBigInt.toString(16).padStart(64, '0'), // hex格式
+      commitment: commitmentHex,
+      transactionHash: receipt.transactionHash,
       timestamp: new Date().toISOString(),
       network: network.name,
       chainId: network.chainId,
@@ -208,23 +256,24 @@ export async function executeDeposit({
         decimals: selectedAsset.decimals
       },
       eventInfo,
-      merkleRoot: mockMerkleRoot,
-      gasUsed: mockReceipt.gasUsed.toString(),
+      merkleRoot: merkleRoot,
+      gasUsed: receipt.gasUsed.toString(),
       // 添加用于前端的额外信息
       secretString: secret, // 保存原始字符串secret用于UI
-      nullifierString: nullifierString, // 保存倒置的nullifier字符串
-      // 标记为模拟交易
-      isMockTransaction: true
+      nullifierString: reversedSecret, // 保存原始字符串nullifier用于UI
+      // 标记为真实交易并使用用户secret
+      isRealTransaction: true,
+      usesUserSecret: true
     }
 
-    console.log('🎉 Mock deposit completed!')
-    console.log('🎭 This was a simulated transaction - no real funds were moved')
-    onProgress('Mock deposit completed!')
+    console.log('🎉 Deposit completed!')
+    console.log('💡 User A has successfully deposited funds, can continue to execute swap operation')
+    onProgress('Deposit completed successfully!')
 
     return {
       success: true,
       data: depositData,
-      receipt: mockReceipt
+      receipt: receipt
     }
 
   } catch (error) {

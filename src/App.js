@@ -16,17 +16,21 @@ function App() {
   const {connect, connectors, isLoading, pendingConnector} = useConnect()
   const {disconnect} = useDisconnect()
   
-  const [currentStep, setCurrentStep] = useState(0)
-  const [completedSteps, setCompletedSteps] = useState([])
-  const [depositData, setDepositData] = useState(null)
-  const [swapData, setSwapData] = useState(null)
+  const [currentStep, setCurrentStep] = useState(0) // Start from deposit step
+  const [completedSteps, setCompletedSteps] = useState([]) // No steps completed initially
+  const [depositData, setDepositData] = useState(null) // Empty initially
+  const [swapData, setSwapData] = useState(null) // Empty initially
   const [currentTransaction, setCurrentTransaction] = useState(null)
 
-  // 监听账户变化
+  // 监听账户变化并更新depositData
   useEffect(() => {
-    // 如果账户发生变化，可以在这里添加必要的逻辑
     if (isConnected && address) {
       console.log('Wallet connected:', address)
+      // 更新depositData中的地址
+      setDepositData(prev => ({
+        ...prev,
+        depositAddress: address
+      }))
     }
   }, [isConnected, address])
 

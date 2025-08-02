@@ -274,62 +274,58 @@ function Deposit({ onNext, isConnected, address, setCurrentTransaction }) {
         signer: signer ? 'present' : 'missing'
       })
       
-      // 🧪 测试：立即显示pending通知
-      console.log('🧪 Testing: Setting immediate pending notification...')
+      // 执行真实的deposit交易
+      const result = await executeDeposit({
+        poolAddress,
+        selectedAsset: selectedToken,
+        secret,
+        signer,
+        onProgress: (progress) => {
+          setDepositProgress(progress)
+        },
+        onTransactionSent: (txHash) => {
+          console.log('📤 Transaction sent:', txHash)
+          // 设置pending通知
+          getCurrentNetwork().then(network => {
+            setCurrentTransaction({
+              hash: txHash,
+              status: 'pending',
+              type: `Deposit ${selectedToken?.fixedAmountFormatted || tokenAmount} ${selectedToken?.ticker}`,
+              network
+            })
+          })
+        }
+      })
       
-      let testNetwork
-      try {
-        testNetwork = await getCurrentNetwork()
-        console.log('🧪 Got network:', testNetwork)
-      } catch (networkError) {
-        console.error('❌ Failed to get network:', networkError)
-        testNetwork = 'arbitrum' // 默认值
-      }
-      
-      const testTransaction = {
-        hash: '0x123456789abcdef123456789abcdef123456789abcdef123456789abcdef123456',
-        status: 'pending',
-        type: `Test Deposit ${selectedToken?.fixedAmountFormatted || tokenAmount} ${selectedToken?.ticker}`,
-        network: testNetwork
-      }
-      console.log('🧪 Test transaction object:', testTransaction)
-      setCurrentTransaction(testTransaction)
-      console.log('🧪 Test notification set, should be visible now')
-      
-      // 🧪 测试：3秒后显示成功通知并跳转
-      setTimeout(() => {
-        console.log('🧪 Testing: Setting success notification...')
+      if (result.success) {
+        console.log('✅ Deposit successful:', result)
+        messageApi.success('Deposit completed successfully!')
+        
+        // 设置成功通知
+        const currentNetwork = await getCurrentNetwork()
         setCurrentTransaction({
-          hash: '0x123456789abcdef123456789abcdef123456789abcdef123456789abcdef123456',
+          hash: result.receipt.transactionHash,
           status: 'success',
-          type: `Test Deposit ${selectedToken?.fixedAmountFormatted || tokenAmount} ${selectedToken?.ticker}`,
-          network: testNetwork
+          type: `Deposit ${selectedToken?.fixedAmountFormatted || tokenAmount} ${selectedToken?.ticker}`,
+          network: currentNetwork
         })
         
-        messageApi.success('Test deposit successful!')
-        
-        // 测试跳转
+        // 跳转到下一步
         setTimeout(() => {
-          console.log('🧪 Testing: Redirecting to swap interface...')
-          setIsDepositing(false) // 在跳转前设置
+          console.log('✅ Redirecting to swap interface...')
+          setIsDepositing(false)
           onNext({
             depositAddress: address,
             tokenA: selectedToken,
             tokenAAmount: selectedToken?.fixedAmountFormatted || tokenAmount,
             secret,
-            depositData: { swapConfigId: selectedToken.configId },
-            transactionHash: '0x123456789abcdef123456789abcdef123456789abcdef123456789abcdef123456'
+            depositData: result.data,
+            transactionHash: result.receipt.transactionHash
           })
         }, 2000)
-      }, 3000)
-      
-      // 不要立即设置setIsDepositing(false)，让它保持loading状态直到跳转
-      return
-      
-      // 暂时注释掉真实的executeDeposit调用
-      /* 
-      ... executeDeposit code here ...
-      */
+      } else {
+        throw new Error('Deposit failed')
+      }
       
     } catch (error) {
       console.error('❌ Deposit failed:', error)

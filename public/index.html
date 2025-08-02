@@ -25,6 +25,12 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>1Inch DEX</title>
+    <script>
+      // Buffer polyfill for blake-hash
+      if (typeof global === 'undefined') {
+        var global = globalThis;
+      }
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

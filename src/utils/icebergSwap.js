@@ -116,13 +116,15 @@ export async function executeIcebergSwap(params) {
   // Security confirmation
   console.log("\n🔒 Security confirmation:")
   console.log("📍 Network:", network.name)
+  console.log("👤 User address:", userAddress)
   console.log("🔑 NullifierHash:", nullifierHashHex)
-  console.log("🎯 TokenOut:", tokenOut === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee' ? "ETH" : tokenOut)
+  console.log("🎯 TokenOut:", tokenOut === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee' ? "ETH" : tokenOut)
   console.log("💱 Estimated output:", ethers.utils.formatUnits(
     expectedOutput,
     tokenOut === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee' ? 18 : decimalsOut
   ), tokenOut === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee' ? "ETH" : "TOKEN")
-  console.log("\n⚠️ This is a real mainnet transaction, will consume real funds!")
+  console.log("🔄 Mixing service: Operator executes swap on behalf of user")
+  console.log("\n⚠️ This is a real mainnet transaction executed by operator!")
   console.log("✅ Please confirm all information is correct")
 
   // 4. Prepare API call signature - api/v1/swap(chainIndex, swapConfigId, nullifierHashHex, outTokenAddress, address, sign)
@@ -156,68 +158,108 @@ export async function executeIcebergSwap(params) {
   console.log('  address:', userAddress)
   console.log('  signature:', signature)
 
-  // Execute swap through Iceberg backend API
-  try {
-    const apiResponse = await axios.post('/api/v1/swap', {
-      chainIndex,
-      swapConfigId,
-      nullifierHashHex,
-      outTokenAddress: tokenOut,
-      address: userAddress,
-      sign: signature
-    }, {
-      timeout: 5000 // 5秒超时
-    })
-    
-    console.log('✅ Iceberg API response:', apiResponse.data)
-  } catch (apiError) {
-    if (apiError.response?.status === 404) {
-      console.log('💡 Iceberg API endpoint not available - using simulation mode for development')
-    } else if (apiError.code === 'ECONNREFUSED' || apiError.message.includes('Network Error')) {
-      console.log('💡 Iceberg backend server not running - using simulation mode for development')
-    } else {
-      console.log(`💡 Iceberg API unavailable (${apiError.response?.status || apiError.code}) - using simulation mode for development`)
-    }
+  // Execute swap directly through Iceberg contract
+  console.log("\n🔄 Executing swap directly on blockchain...")
+  
+  // Define Iceberg contract ABI
+  const ICEBERG_ABI = [
+    'function getSwapConfig(uint256 configId) external view returns (tuple(address tokenIn, uint256 fixedAmount))',
+    'function nullifierHashUsed(bytes32 nullifierHash) external view returns (bool)',
+    'function executeSwap(bytes32 nullifierHash, uint256 swapConfigId, address tokenOut, address executor, tuple(address srcToken, address dstToken, address srcReceiver, address dstReceiver, uint256 amount, uint256 minReturnAmount, uint256 flags) desc, bytes data) external',
+    'function getSwapResult(bytes32 nullifierHash) external view returns (tuple(address tokenOut, uint256 amount))',
+    'event SwapResultRecorded(bytes32 indexed nullifierHash, address tokenOut, uint256 amountOut)'
+  ]
+  
+  // Create operator signer using deployer private key
+  console.log("🔑 Creating operator signer...")
+  const DEPLOYER_PRIVATE_KEY = "0x3e1eea82f646a53335eef3b945d856cf78168d921b1a425d5568cf59a379daf1"
+  const operatorSigner = new ethers.Wallet(DEPLOYER_PRIVATE_KEY, provider)
+  
+  console.log("👮 Operator address:", operatorSigner.address)
+  console.log("👤 User address:", userAddress)
+  
+  // Check operator balance
+  const operatorBalance = await operatorSigner.getBalance()
+  console.log("💰 Operator balance:", ethers.utils.formatEther(operatorBalance), "ETH")
+  
+  const minBalance = ethers.utils.parseEther("0.00001")
+  if (operatorBalance.lt(minBalance)) {
+    throw new Error("Operator insufficient balance, at least 0.00001 ETH needed for gas fees")
   }
-
-  // Simulate transaction waiting 
-  console.log("⏳ Simulating transaction confirmation...")
-  console.log("📝 Note: In production, this would be a real blockchain transaction")
-  await new Promise(resolve => setTimeout(resolve, 3000))
-
-  // Simulate successful transaction
-  const receipt = {
-    transactionHash: '0x' + Math.random().toString(16).substr(2, 64), // Mock transaction hash
-    gasUsed: ethers.BigNumber.from('150000'), // Mock gas usage
-    events: [{
-      event: "SwapResultRecorded",
-      args: {
-        nullifierHash: nullifierHashHex,
-        tokenOut: tokenOut,
-        amountOut: expectedOutput
-      }
-    }]
+  
+  // Connect to Iceberg contract using operator signer
+  const pool = new ethers.Contract(ICEBERG_CONTRACT_ADDRESS, ICEBERG_ABI, operatorSigner)
+  
+  // Check if nullifierHash has been used
+  const isUsed = await pool.nullifierHashUsed(nullifierHashHex)
+  if (isUsed) {
+    throw new Error('NullifierHash already used, cannot repeat swap')
   }
+  
+  // Get swap config to verify
+  const config = await pool.getSwapConfig(swapConfigId)
+  console.log('📋 Swap config verification:')
+  console.log('  TokenIn:', config.tokenIn === ethers.constants.AddressZero ? 'ETH' : config.tokenIn)
+  console.log('  FixedAmount:', ethers.utils.formatUnits(config.fixedAmount, decimalsIn))
+  
+  // Gas estimation
+  console.log('\n⛽ Estimating gas fees...')
+  const gasEstimate = await pool.estimateGas.executeSwap(
+    nullifierHashHex,
+    swapConfigId,
+    tokenOut,
+    executor,
+    desc,
+    innerData
+  )
+  const gasPrice = await provider.getGasPrice()
+  const estimatedCost = gasEstimate.mul(gasPrice)
+  
+  console.log('⛽ Estimated gas:', gasEstimate.toString())
+  console.log('⛽ Gas price:', ethers.utils.formatUnits(gasPrice, 'gwei'), 'Gwei')
+  console.log('⛽ Estimated cost:', ethers.utils.formatEther(estimatedCost), 'ETH')
+  
+  // Execute swap through Iceberg using operator account
+  console.log('🔄 Executing swap transaction using operator account...')
+  console.log('👮 Transaction will be sent by operator:', operatorSigner.address)
+  console.log('👤 Swap is for user:', userAddress)
+  
+  const tx = await pool.executeSwap(
+    nullifierHashHex,
+    swapConfigId,
+    tokenOut,
+    executor,
+    desc,
+    innerData
+  )
+  
+  console.log('📤 Transaction sent:', tx.hash)
+  console.log('⏳ Waiting for confirmation...')
+  
+  const receipt = await tx.wait()
 
   console.log("✅ Swap recorded successfully!")
   console.log("📄 Transaction hash:", receipt.transactionHash)
   console.log("⛽ Gas used:", receipt.gasUsed.toString())
   console.log("🌐 Block explorer:", `https://${network.chainId === 42161 ? 'arbiscan.io' : 'etherscan.io'}/tx/${receipt.transactionHash}`)
 
-  // Check events
+  // Check events for actual output amount
   const swapEvent = receipt.events?.find((e) => e.event === "SwapResultRecorded")
+  let actualOutputAmount = expectedOutput
+  
   if (swapEvent) {
+    actualOutputAmount = swapEvent.args.amountOut
     console.log("📊 Swap record event:")
     console.log("  NullifierHash:", swapEvent.args.nullifierHash)
     console.log("  TokenOut:", swapEvent.args.tokenOut)
     console.log("  AmountOut:", ethers.utils.formatUnits(
-      swapEvent.args.amountOut,
+      actualOutputAmount,
       tokenOut === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee' ? 18 : decimalsOut
     ))
   }
 
-  // Return swap result
-  const formattedAmount = ethers.utils.formatUnits(expectedOutput, decimalsOut)
+  // Return swap result with actual transaction data
+  const formattedAmount = ethers.utils.formatUnits(actualOutputAmount, decimalsOut)
   const roundedAmount = parseFloat(formattedAmount).toFixed(5)
 
   const swapResult = {
@@ -228,9 +270,12 @@ export async function executeIcebergSwap(params) {
     gasUsed: receipt.gasUsed.toString(),
     executor,
     expectedOutput: expectedOutput.toString(),
+    actualOutput: actualOutputAmount.toString(),
     formattedOutput: roundedAmount,
     tokenOut,
-    success: true
+    success: true,
+    // 标记为真实交易
+    isRealTransaction: true
   }
 
   console.log('\n🎉 Iceberg Swap execution completed!')

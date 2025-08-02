@@ -9,26 +9,31 @@
     "@testing-library/user-event": "^13.5.0",
     "antd": "^5.1.5",
     "axios": "^1.11.0",
+    "circomlibjs": "^0.1.7",
     "ethers": "^5.7.2",
     "poseidon-lite": "^0.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.6.2",
     "react-scripts": "5.0.1",
+    "snarkjs": "^0.7.5",
     "wagmi": "^0.10.11",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "craco start",
+    "build": "craco build",
+    "test": "craco test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "env": {
+      "es2020": true
+    }
   },
   "browserslist": {
     "production": [
@@ -43,8 +48,14 @@
     ]
   },
   "devDependencies": {
+    "@craco/craco": "^7.1.0",
+    "assert": "^2.1.0",
+    "buffer": "^6.0.3",
     "cors": "^2.8.5",
+    "crypto-browserify": "^3.12.1",
     "express": "^5.1.0",
-    "http-proxy-middleware": "^3.0.5"
+    "http-proxy-middleware": "^3.0.5",
+    "process": "^0.11.10",
+    "stream-browserify": "^3.0.0"
   }
 }

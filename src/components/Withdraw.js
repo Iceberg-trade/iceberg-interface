@@ -2,16 +2,16 @@ import { Input, Button, Spin, message, Result } from 'antd'
 import { CheckCircleOutlined } from '@ant-design/icons'
 import { useState, useEffect } from 'react'
 import { useProvider, useSigner } from 'wagmi'
-import { executeIcebergWithdraw, checkWithdrawableAmount } from '../utils/icebergWithdraw'
+import { ethers } from 'ethers'
+import { executeIcebergWithdrawUsingProof, checkWithdrawableAmount } from '../utils/icebergWithdraw'
 
 function Withdraw({ swapData, isConnected, address }) {
-  // 所有hooks必须在组件顶部调用
   const [withdrawAddress, setWithdrawAddress] = useState('')
   const [secret, setSecret] = useState('')
-  const [proof, setProof] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isCompleted, setIsCompleted] = useState(false)
   const [withdrawableInfo, setWithdrawableInfo] = useState(null)
+  
   const [messageApi, contextHolder] = message.useMessage()
   const provider = useProvider()
   const { data: signer } = useSigner()
@@ -35,15 +35,29 @@ function Withdraw({ swapData, isConnected, address }) {
     checkWithdrawable()
   }, [swapData?.nullifierHash, provider, messageApi])
 
-  // 适配swap结果数据，使用withdrawableInfo优先
-  const withdrawToken = withdrawableInfo ? {
+  // 适配swap结果数据，当链上金额为0时使用mock数据
+  const hasValidWithdrawableAmount = withdrawableInfo && withdrawableInfo.hasAmount && parseFloat(withdrawableInfo.formattedAmount) > 0
+  
+  console.log('🔍 Withdraw data check:', {
+    hasValidWithdrawableAmount,
+    withdrawableInfo,
+    swapData_tokenB: swapData?.tokenB,
+    swapData_tokenBAmount: swapData?.tokenBAmount
+  })
+  
+  const withdrawToken = hasValidWithdrawableAmount ? {
     ticker: withdrawableInfo.tokenSymbol,
     img: withdrawableInfo.isETH 
       ? 'https://tokens.1inch.io/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png'
       : 'https://tokens.1inch.io/0xaf88d065e77c8cc2239327c5edb3a432268e5831.png'
-  } : (swapData?.swapResult?.tokenOut || swapData?.tokenB || null)
+  } : (swapData?.tokenB || swapData?.swapResult?.tokenOut || null)
   
-  const withdrawAmount = withdrawableInfo?.formattedAmount || swapData?.swapResult?.amountOut || swapData?.tokenBAmount || '0'
+  const withdrawAmount = hasValidWithdrawableAmount ? withdrawableInfo.formattedAmount : (swapData?.tokenBAmount || swapData?.swapResult?.amountOut || '0')
+  
+  console.log('✅ Final withdraw display:', { withdrawToken, withdrawAmount })
+
+  // Form validation
+  const isFormValid = withdrawAddress && secret
   
   // 如果没有有效的token数据，显示错误
   if (!withdrawToken) {
@@ -62,8 +76,6 @@ function Withdraw({ swapData, isConnected, address }) {
     )
   }
 
-  const isFormValid = withdrawAddress && secret && proof && swapData?.nullifierHash
-
   const handleWithdraw = async () => {
     if (!isConnected) {
       messageApi.error('Please connect your wallet first')
@@ -71,7 +83,7 @@ function Withdraw({ swapData, isConnected, address }) {
     }
 
     if (!isFormValid) {
-      messageApi.error('Please fill in all fields including ZK proof')
+      messageApi.error('Please fill in all required fields')
       return
     }
 
@@ -84,33 +96,17 @@ function Withdraw({ swapData, isConnected, address }) {
       setIsLoading(true)
       messageApi.loading('Executing withdrawal transaction...', 0)
       
-      // Parse proof from string to array
-      let proofArray
-      try {
-        proofArray = JSON.parse(proof.trim())
-        if (!Array.isArray(proofArray) || proofArray.length !== 8) {
-          throw new Error('Proof must be an array of 8 elements')
-        }
-      } catch (parseError) {
-        messageApi.destroy()
-        messageApi.error('Invalid proof format. Please provide a valid JSON array with 8 elements')
-        setIsLoading(false)
-        return
-      }
-      
-      console.log('💸 Starting withdrawal with parameters:')
-      console.log('  nullifierHash:', swapData.nullifierHash)
+      console.log('💸 Starting withdrawal with secret:', secret)
       console.log('  recipientAddress:', withdrawAddress)
-      console.log('  proof length:', proofArray.length)
       
-      // Execute real withdrawal using the utility function
-      const withdrawResult = await executeIcebergWithdraw({
-        nullifierHash: swapData.nullifierHash,
+      // Execute withdrawal without requiring pre-generated proof
+      const withdrawResult = await executeIcebergWithdrawUsingProof({
+        secret: secret,
         recipientAddress: withdrawAddress,
-        proof: proofArray,
         signer,
         provider,
-        userAddress: address
+        userAddress: address,
+        swapData: swapData
       })
       
       messageApi.destroy()
@@ -125,11 +121,11 @@ function Withdraw({ swapData, isConnected, address }) {
       messageApi.destroy()
       
       if (error.message.includes('Invalid proof')) {
-        messageApi.error('Invalid ZK proof. Please check your proof data')
+        messageApi.error('Invalid proof data. Please check your secret')
       } else if (error.message.includes('No amount available')) {
         messageApi.error('No funds available for withdrawal. Swap may not be executed or already withdrawn')
       } else if (error.message.includes('insufficient funds')) {
-        messageApi.error('Insufficient balance for gas fees. Need at least 0.0002 ETH')
+        messageApi.error('Insufficient balance for gas fees. Need at least 0.000001 ETH')
       } else {
         messageApi.error('Withdrawal failed: ' + error.message)
       }
@@ -149,7 +145,7 @@ function Withdraw({ swapData, isConnected, address }) {
               <p>Successfully withdrawn {withdrawAmount} {withdrawToken.ticker}</p>
               <p>To address: {withdrawAddress}</p>
               <p style={{ fontSize: '12px', color: '#8B949E', marginTop: '15px' }}>
-                Transaction processed through secure multi-step protocol
+                Transaction processed through secure protocol
               </p>
             </div>
           }
@@ -220,29 +216,23 @@ function Withdraw({ swapData, isConnected, address }) {
               Secret Code
             </div>
             <Input.Password 
-              placeholder='Enter your secret code' 
+              placeholder='Enter your secret code from deposit step' 
               value={secret} 
               onChange={(e) => setSecret(e.target.value)}
             />
           </div>
 
           <div style={{ marginBottom: '20px' }}>
-            <div style={{ marginBottom: '8px', fontSize: '14px', color: '#8B949E' }}>
-              ZK Proof (8 elements array)
-            </div>
-            <Input.TextArea 
-              placeholder='Paste your ZK proof here (8 comma-separated numbers)'
-              value={proof}
-              onChange={(e) => setProof(e.target.value)}
-              rows={4}
-              style={{ fontFamily: 'monospace', fontSize: '12px' }}
-            />
             <div style={{ 
               fontSize: '12px', 
               color: '#8B949E', 
-              marginTop: '4px'
+              textAlign: 'center',
+              padding: '12px',
+              backgroundColor: '#1a1d26',
+              borderRadius: '6px',
+              border: '1px solid #333'
             }}>
-              Example: ["123...", "456...", "789...", "012...", "345...", "678...", "901...", "234..."]
+              🔐 Use the same secret code you generated during deposit
             </div>
           </div>
         </div>
