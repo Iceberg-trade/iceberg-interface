@@ -72,18 +72,12 @@ export async function executeIcebergWithdraw(params) {
   let tokenOut, amount
   
   if (ethers.BigNumber.from(swapResult.amount).eq(0)) {
-    console.log("⚠️ No amount found on-chain, using mock data for testing")
-    // Use mock data for testing when chain data is not available
-    tokenOut = ethers.constants.AddressZero // ETH
-    amount = ethers.utils.parseEther("0.0002") // 0.0002 ETH
-    console.log("📝 Using mock withdrawal data:")
-    console.log("  TokenOut: ETH")
-    console.log("  Amount: 0.0002 ETH")
-  } else {
-    tokenOut = swapResult.tokenOut
-    amount = swapResult.amount
-    console.log("✅ Using real on-chain data")
+    throw new Error("No amount available for withdrawal. The swap may not have been executed or has already been withdrawn.")
   }
+  
+  tokenOut = swapResult.tokenOut
+  amount = swapResult.amount
+  console.log("✅ Using on-chain data")
   
   console.log("💰 Withdrawable info:")
   console.log("  TokenOut:", tokenOut === ethers.constants.AddressZero ? "ETH" : tokenOut)
@@ -185,30 +179,9 @@ export async function executeIcebergWithdrawUsingProof(params) {
   console.log("🔑 Secret provided:", secret ? 'yes' : 'no')
   console.log("🔐 Proof provided:", contractProof ? 'yes' : 'no')
   
-  // If no proof provided, simulate the withdrawal
+  // Require valid proof for withdrawal
   if (!contractProof) {
-    console.log("💡 No ZK proof provided, running simulation mode...")
-    
-    // Simulate withdrawal delay
-    await new Promise(resolve => setTimeout(resolve, 3000))
-    
-    console.log("✅ Simulated withdrawal completed successfully!")
-    console.log("📝 Note: This is a simulation - no real blockchain transaction was made")
-    
-    return {
-      success: true,
-      isSimulation: true,
-      transactionHash: '0x' + Math.random().toString(16).substr(2, 64),
-      blockNumber: Math.floor(Math.random() * 1000000) + 18000000,
-      gasUsed: '150000',
-      nullifierHash: swapData?.nullifierHash || nullifierHash,
-      recipientAddress,
-      tokenOut: ethers.constants.AddressZero,
-      amount: ethers.utils.parseEther("0.0002").toString(),
-      formattedAmount: "0.0002",
-      tokenSymbol: "ETH",
-      message: "Simulation completed - use real ZK proof for actual withdrawal"
-    }
+    throw new Error("ZK proof is required for withdrawal. Please provide a valid proof.")
   }
   
   // Format nullifierHash as bytes32
@@ -245,18 +218,12 @@ export async function executeIcebergWithdrawUsingProof(params) {
   let tokenOut, amount
   
   if (ethers.BigNumber.from(swapResult.amount).eq(0)) {
-    console.log("⚠️ No amount found on-chain, using mock data for testing")
-    // Use mock data for testing when chain data is not available
-    tokenOut = ethers.constants.AddressZero // ETH
-    amount = ethers.utils.parseEther("0.0002") // 0.0002 ETH
-    console.log("📝 Using mock withdrawal data:")
-    console.log("  TokenOut: ETH")
-    console.log("  Amount: 0.0002 ETH")
-  } else {
-    tokenOut = swapResult.tokenOut
-    amount = swapResult.amount
-    console.log("✅ Using real on-chain data")
+    throw new Error("No amount available for withdrawal. The swap may not have been executed or has already been withdrawn.")
   }
+  
+  tokenOut = swapResult.tokenOut
+  amount = swapResult.amount
+  console.log("✅ Using on-chain data")
   
   console.log("💰 Withdrawable info:")
   console.log("  TokenOut:", tokenOut === ethers.constants.AddressZero ? "ETH" : tokenOut)

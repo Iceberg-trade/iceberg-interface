@@ -2,7 +2,6 @@ import { Input, Button, Spin, message, Result } from 'antd'
 import { CheckCircleOutlined } from '@ant-design/icons'
 import { useState, useEffect } from 'react'
 import { useProvider, useSigner } from 'wagmi'
-import { ethers } from 'ethers'
 import { executeIcebergWithdrawUsingProof, checkWithdrawableAmount } from '../utils/icebergWithdraw'
 
 function Withdraw({ swapData, isConnected, address }) {
@@ -35,14 +34,12 @@ function Withdraw({ swapData, isConnected, address }) {
     checkWithdrawable()
   }, [swapData?.nullifierHash, provider, messageApi])
 
-  // 适配swap结果数据，当链上金额为0时使用mock数据
+  // Check if we have valid withdrawable amount from on-chain data
   const hasValidWithdrawableAmount = withdrawableInfo && withdrawableInfo.hasAmount && parseFloat(withdrawableInfo.formattedAmount) > 0
   
   console.log('🔍 Withdraw data check:', {
     hasValidWithdrawableAmount,
-    withdrawableInfo,
-    swapData_tokenB: swapData?.tokenB,
-    swapData_tokenBAmount: swapData?.tokenBAmount
+    withdrawableInfo
   })
   
   const withdrawToken = hasValidWithdrawableAmount ? {
@@ -50,26 +47,26 @@ function Withdraw({ swapData, isConnected, address }) {
     img: withdrawableInfo.isETH 
       ? 'https://tokens.1inch.io/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png'
       : 'https://tokens.1inch.io/0xaf88d065e77c8cc2239327c5edb3a432268e5831.png'
-  } : (swapData?.tokenB || swapData?.swapResult?.tokenOut || null)
+  } : null
   
-  const withdrawAmount = hasValidWithdrawableAmount ? withdrawableInfo.formattedAmount : (swapData?.tokenBAmount || swapData?.swapResult?.amountOut || '0')
+  const withdrawAmount = hasValidWithdrawableAmount ? withdrawableInfo.formattedAmount : '0'
   
   console.log('✅ Final withdraw display:', { withdrawToken, withdrawAmount })
 
   // Form validation
   const isFormValid = withdrawAddress && secret
   
-  // 如果没有有效的token数据，显示错误
+  // Display error if no valid withdrawal data is available
   if (!withdrawToken) {
     return (
       <>
         {contextHolder}
         <div className="tradeBox" style={{ textAlign: 'center', padding: '60px 0' }}>
           <div style={{ color: '#ff4d4f', fontSize: '16px' }}>
-            Error: No token data available for withdrawal
+            No withdrawable amount found
           </div>
           <div style={{ color: '#8B949E', fontSize: '14px', marginTop: '10px' }}>
-            Please complete the swap step first
+            The swap may not have been executed yet or has already been withdrawn
           </div>
         </div>
       </>
@@ -256,10 +253,14 @@ function Withdraw({ swapData, isConnected, address }) {
           fontSize: '12px',
           color: '#8B949E'
         }}>
-          <div>Original deposit: {swapData?.tokenAAmount} {swapData?.tokenA?.ticker}</div>
-          <div>From: {swapData?.depositAddress}</div>
-          <div>Swapped to: {withdrawAmount} {withdrawToken?.ticker}</div>
-          {swapData.swapResult?.transactionHash && (
+          {swapData?.tokenAAmount && swapData?.tokenA?.ticker && (
+            <div>Original deposit: {swapData.tokenAAmount} {swapData.tokenA.ticker}</div>
+          )}
+          {swapData?.depositAddress && (
+            <div>From: {swapData.depositAddress}</div>
+          )}
+          <div>Available to withdraw: {withdrawAmount} {withdrawToken?.ticker}</div>
+          {swapData?.swapResult?.transactionHash && (
             <div style={{ fontSize: '10px', opacity: 0.7, marginTop: '4px' }}>
               Swap Tx: {swapData.swapResult.transactionHash.substring(0, 16)}...
             </div>
