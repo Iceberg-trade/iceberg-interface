@@ -15,13 +15,13 @@ function Withdraw({ swapData, isConnected, address }) {
   const [messageApi, contextHolder] = message.useMessage()
   const { data: signer } = useSigner()
   
-  // Simple mock data - no complex validation
-  const withdrawToken = {
+  // 从swapData中获取目标资产信息
+  const withdrawToken = swapData?.swapResult?.tokenOut || {
     ticker: "USDC",
     img: 'https://tokens.1inch.io/0xaf88d065e77c8cc2239327c5edb3a432268e5831.png'
   }
   
-  const withdrawAmount = "0.25000"
+  const withdrawAmount = swapData?.swapResult?.amountOut || "0.25000"
 
   // Form validation
   const isFormValid = withdrawAddress && secret
@@ -241,7 +241,7 @@ function Withdraw({ swapData, isConnected, address }) {
           fontSize: '12px',
           color: '#8B949E'
         }}>
-          {swapData?.tokenAAmount && swapData?.tokenA?.ticker && (
+          {swapData?.tokenA && (
             <div>Original deposit: {swapData.tokenAAmount} {swapData.tokenA.ticker}</div>
           )}
           {swapData?.depositAddress && (
@@ -251,6 +251,11 @@ function Withdraw({ swapData, isConnected, address }) {
           {swapData?.swapResult?.transactionHash && (
             <div style={{ fontSize: '10px', opacity: 0.7, marginTop: '4px' }}>
               Swap Tx: {swapData.swapResult.transactionHash.substring(0, 16)}...
+            </div>
+          )}
+          {swapData?.swapResult && (
+            <div style={{ fontSize: '10px', opacity: 0.7, marginTop: '4px' }}>
+              💱 Swapped from {swapData.tokenA.ticker} to {withdrawToken.ticker}
             </div>
           )}
         </div>

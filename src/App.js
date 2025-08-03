@@ -16,31 +16,16 @@ function App() {
   const {connect, connectors, isLoading, pendingConnector} = useConnect()
   const {disconnect} = useDisconnect()
   
-  const [currentStep, setCurrentStep] = useState(2) // Skip to withdraw step
-  const [completedSteps, setCompletedSteps] = useState([0, 1]) // Mark deposit and swap as completed
-  const [depositData, setDepositData] = useState({
-    tokenA: {
-      ticker: "ETH",
-      address: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-      decimals: 18,
-      img: "https://tokens.1inch.io/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png"
-    },
-    tokenAAmount: "0.0001",
-    depositAddress: address
-    // secret will be input by user in swap interface
-  }) // Basic deposit data for swap testing
-  const [swapData, setSwapData] = useState({}) // Empty object for withdraw testing
+  const [currentStep, setCurrentStep] = useState(0) // Start from deposit step
+  const [completedSteps, setCompletedSteps] = useState([]) // No steps completed initially
+  const [depositData, setDepositData] = useState(null) // Will be populated after deposit
+  const [swapData, setSwapData] = useState(null) // Will be populated after swap
   const [currentTransaction, setCurrentTransaction] = useState(null)
 
-  // 监听账户变化并更新depositData
+  // 监听账户变化
   useEffect(() => {
     if (isConnected && address) {
       console.log('Wallet connected:', address)
-      // 更新depositData中的地址
-      setDepositData(prev => ({
-        ...prev,
-        depositAddress: address
-      }))
     }
   }, [isConnected, address])
 
