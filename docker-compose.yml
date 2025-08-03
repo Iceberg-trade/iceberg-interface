@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # 前端应用
+  iceberg-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./ssl:/etc/nginx/ssl:ro  # SSL证书目录 (可选)
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # CORS代理服务 (可选)
+  cors-proxy:
+    image: node:18-alpine
+    working_dir: /app
+    volumes:
+      - ./cors-proxy-server.js:/app/cors-proxy-server.js
+      - ./package.json:/app/package.json
+    ports:
+      - "8080:8080"
+    command: sh -c "npm install express cors && node cors-proxy-server.js"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=8080
+
+# 可选：添加网络配置
+networks:
+  default:
+    name: iceberg-network
+
+# 可选：数据持久化
+volumes:
+  nginx_logs:
+    driver: local

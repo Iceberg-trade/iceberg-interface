@@ -6,7 +6,7 @@ import { executeIcebergWithdrawUsingProof } from '../utils/icebergWithdraw'
 import { getIcebergAddress } from '../utils/getDepositAssets'
 import { ethers } from 'ethers'
 
-function Withdraw({ swapData, isConnected, address }) {
+function Withdraw({ swapData, isConnected, address, setCurrentTransaction }) {
   const [withdrawAddress, setWithdrawAddress] = useState('')
   const [secret, setSecret] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -98,6 +98,19 @@ function Withdraw({ swapData, isConnected, address }) {
       messageApi.success('Withdrawal executed successfully!')
       
       console.log('✅ Withdrawal completed:', withdrawResult)
+      
+      // 获取网络信息用于transaction notification
+      const network = await signer.provider.getNetwork()
+      
+      // 设置交易通知
+      if (setCurrentTransaction && withdrawResult.transactionHash) {
+        setCurrentTransaction({
+          hash: withdrawResult.transactionHash,
+          network: network.chainId === 42161 ? 'arbitrum' : 'ethereum',
+          type: 'Withdraw Transaction',
+          status: 'success'
+        })
+      }
       
       setIsCompleted(true)
       
