@@ -216,6 +216,6 @@ export async function getIcebergAddress() {
   } catch (error) {
     console.warn('Failed to load deployment config, using Arbitrum mainnet address')
     // 使用 Arbitrum 主网的 Iceberg 合约地址作为默认值
-    return '0xE0aFa53dD37432265dd68FdbC91a06B12F997380'
+    return '0x3db30702b8BCb691aa146069479a20E553FB5F4A'
   }
 }

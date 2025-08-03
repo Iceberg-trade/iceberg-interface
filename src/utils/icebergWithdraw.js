@@ -8,7 +8,7 @@ import { getErrorMessage, errorMessageIncludes } from "./errorUtils";
 import { generateProof } from "./generateProof";
 
 // Iceberg contract address
-const ICEBERG_CONTRACT_ADDRESS = "0xE0aFa53dD37432265dd68FdbC91a06B12F997380";
+const ICEBERG_CONTRACT_ADDRESS = "0x3db30702b8BCb691aa146069479a20E553FB5F4A";
 
 /**
  * Execute withdrawal transaction

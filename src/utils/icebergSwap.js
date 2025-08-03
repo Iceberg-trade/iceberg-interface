@@ -9,7 +9,7 @@ import axios from 'axios'
 const { poseidon1 } = require("poseidon-lite")
 
 // Iceberg contract address
-const ICEBERG_CONTRACT_ADDRESS = "0xE0aFa53dD37432265dd68FdbC91a06B12F997380"
+const ICEBERG_CONTRACT_ADDRESS = "0x3db30702b8BCb691aa146069479a20E553FB5F4A"
 
 /**
  * Execute swap through Iceberg contract
