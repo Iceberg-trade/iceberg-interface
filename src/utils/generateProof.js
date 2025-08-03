@@ -41,9 +41,26 @@ async function generateProof(recipientAddress, nullifier, secret, poolAddress, c
     console.log("Building Poseidon hash function...");
     const poseidon = await buildPoseidon();
     
-    // 4. Prepare input data
-    const nullifierBigInt = BigInt(nullifier);
-    const secretBigInt = BigInt(secret);
+    // 4. Prepare input data - handle UUID format like depositUtils.js
+    let nullifierBigInt, secretBigInt;
+    
+    // For UUID format secret, use hash conversion (same as depositUtils.js)
+    if (secret.match(/[^0-9]/)) {
+      console.log('Using hash conversion for non-numeric secret/nullifier')
+      const reversedSecret = secret.split('').reverse().join('')
+      const secretHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(secret))
+      const nullifierHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(reversedSecret))
+      secretBigInt = BigInt(secretHash)
+      nullifierBigInt = BigInt(nullifierHash)
+      console.log('  Secret hash:', secretHash)
+      console.log('  Nullifier hash:', nullifierHash)
+    } else {
+      // For pure numeric secret, direct conversion
+      console.log('Using numeric conversion')
+      nullifierBigInt = BigInt(nullifier)
+      secretBigInt = BigInt(secret)
+    }
+    
     const recipient = BigInt(recipientAddress);
     
     console.log("Input parameters:");
