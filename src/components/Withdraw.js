@@ -54,20 +54,43 @@ function Withdraw({ swapData, isConnected, address }) {
       const poolAddress = await getIcebergAddress()
       console.log('🏠 Pool address:', poolAddress)
       
-      // Generate nullifier from secret (following icebergSwap.js logic)
-      const reversedSecret = secret.split('').reverse().join('')
-      console.log('🔄 Generating nullifier from reversed secret')
+      // Generate nullifier from secret (following depositUtils.js logic)
+      console.log('🔄 Generating nullifier and secret from user input')
+      console.log('🔧 User input secret:', secret)
       
-      // Convert reversed secret to BigNumber for calculation
-      const nullifier = ethers.BigNumber.from(ethers.utils.keccak256(ethers.utils.toUtf8Bytes(reversedSecret))).toString()
-      console.log('🔑 Generated nullifier:', nullifier)
+      // Calculate nullifier (reversed secret)
+      const reversedSecret = secret.split('').reverse().join('')
+      console.log('🔧 Nullifier (reversed secret):', reversedSecret)
+      
+      // Convert to BigInt for calculation - same logic as depositUtils.js
+      let secretBigInt, nullifierBigInt
+      
+      // For UUID format secret, use hash conversion (same as depositUtils.js)
+      if (secret.match(/[^0-9]/)) {
+        console.log('📋 Using hash conversion for non-numeric secret')
+        const secretHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(secret))
+        const nullifierHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(reversedSecret))
+        secretBigInt = BigInt(secretHash)
+        nullifierBigInt = BigInt(nullifierHash)
+        console.log('  Secret hash:', secretHash)
+        console.log('  Nullifier hash:', nullifierHash)
+      } else {
+        // For pure numeric secret, direct conversion
+        console.log('📋 Using numeric conversion')
+        secretBigInt = BigInt(secret)
+        nullifierBigInt = BigInt(reversedSecret)
+      }
+      
+      const nullifier = nullifierBigInt.toString()
+      console.log('🔑 Generated nullifier BigInt:', nullifier)
+      console.log('🔑 Generated secret BigInt:', secretBigInt.toString())
       
       // Execute withdrawal with correct parameters
       const withdrawResult = await executeIcebergWithdrawUsingProof(
         poolAddress,
         withdrawAddress,
         nullifier,
-        secret,
+        secretBigInt.toString(),
         signer
       )
       

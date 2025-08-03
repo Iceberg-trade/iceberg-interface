@@ -36,31 +36,32 @@ export class ZKProofGeneratorBrowser {
     }
 
     /**
-     * Generate ZK proof using snarkjs browser APIs
+     * Generate ZK proof using snarkjs browser APIs (groth16.fullProve)
      */
     async generateProof(circuitInput) {
         console.log('🔗 Generating ZK proof in browser...');
+        console.log('Circuit input:', circuitInput);
         
         try {
-            // 1. Load WASM file
-            console.log('📁 Loading WASM file...');
-            const wasmResponse = await fetch(this.baseUrl + '/circuits/build/withdraw/withdraw_js/withdraw.wasm');
-            const wasmBuffer = await wasmResponse.arrayBuffer();
+            // Use groth16.fullProve - the recommended method for browser
+            console.log('🔄 Using groth16.fullProve (browser-optimized API)...');
             
-            // 2. Load zkey file
-            console.log('🔑 Loading proving key...');
-            const zkeyResponse = await fetch(this.baseUrl + '/circuits/keys/withdraw/withdraw_0001.zkey');
-            const zkeyBuffer = await zkeyResponse.arrayBuffer();
+            const wasmPath = this.baseUrl + '/circuits/build/withdraw/withdraw_js/withdraw.wasm';
+            const zkeyPath = this.baseUrl + '/circuits/keys/withdraw/withdraw_0001.zkey';
             
-            // 3. Generate witness
-            console.log('🔄 Step 1: Generating witness...');
-            const { witness } = await snarkjs.wtns.calculate(circuitInput, wasmBuffer);
+            console.log('WASM path:', wasmPath);
+            console.log('Zkey path:', zkeyPath);
             
-            // 4. Generate proof
-            console.log('🔄 Step 2: Generating proof...');
-            const { proof, publicSignals } = await snarkjs.groth16.prove(zkeyBuffer, witness);
+            // groth16.fullProve handles witness generation and proof generation in one call
+            const { proof, publicSignals } = await snarkjs.groth16.fullProve(
+                circuitInput,
+                wasmPath,
+                zkeyPath
+            );
             
             console.log('✅ Proof generated successfully!');
+            console.log('Public signals:', publicSignals);
+            console.log('Proof:', proof);
             
             return {
                 proof,
@@ -70,6 +71,7 @@ export class ZKProofGeneratorBrowser {
 
         } catch (error) {
             console.error('❌ Error generating proof:', error);
+            console.error('Error details:', error.message);
             throw error;
         }
     }
@@ -82,8 +84,16 @@ export class ZKProofGeneratorBrowser {
         
         try {
             // Load verification key
-            const vkResponse = await fetch(this.baseUrl + '/circuits/keys/withdraw/withdraw_verification_key.json');
+            const vkPath = this.baseUrl + '/circuits/keys/withdraw/withdraw_verification_key.json';
+            console.log('Loading verification key from:', vkPath);
+            
+            const vkResponse = await fetch(vkPath);
+            if (!vkResponse.ok) {
+                throw new Error(`Failed to load verification key: ${vkResponse.status}`);
+            }
+            
             const verificationKey = await vkResponse.json();
+            console.log('Verification key loaded');
             
             // Verify proof
             const isValid = await snarkjs.groth16.verify(verificationKey, publicSignals, proof);

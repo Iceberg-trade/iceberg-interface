@@ -52,13 +52,6 @@ async function executeIcebergWithdrawUsingProof(poolAddress, recipientAddress, n
   console.log("Signer address:", signer.address);
   const balance = await signer.getBalance();
   console.log("=� Signer balance:", ethers.utils.formatEther(balance), "ETH");
-
-  // Balance check
-  const minBalance = ethers.utils.parseEther("0.0002");
-  if (balance.lt(minBalance)) {
-    throw new Error("Insufficient balance, at least 0.0002 ETH required for gas fees");
-  }
-
   console.log("=� Recipient address:", recipientAddress);
   console.log("<� Contract address:", poolAddress);
 
@@ -87,25 +80,14 @@ async function executeIcebergWithdrawUsingProof(poolAddress, recipientAddress, n
 
     // Extract proof and nullifierHash from generated proof data
     const proof = proofData.proof;
-    const nullifierHash = proofData.nullifierHash;
-
-    console.log("=🔑 NullifierHash:", nullifierHash);
-
-    // Check swap status
-    const swapResult = await pool.getSwapResult(nullifierHash);
-    if (ethers.BigNumber.from(swapResult.amount).eq(0)) {
-      throw new Error("No amount available for withdrawal, swap may not be executed or already withdrawn");
-    }
-
-    const tokenOut = swapResult.tokenOut;
-    const amount = swapResult.amount;
+    const nullifierHashStr = proofData.nullifierHash;
     
-    console.log("=� Withdrawable info:");
-    console.log("  TokenOut:", tokenOut === ethers.constants.AddressZero ? "ETH" : tokenOut);
-    console.log("  Amount:", ethers.utils.formatUnits(
-      amount,
-      tokenOut === ethers.constants.AddressZero ? 18 : 6
-    ), tokenOut === ethers.constants.AddressZero ? "ETH" : "Token");
+    // Convert nullifierHash string to bytes32 format (32 bytes = 64 hex chars + 0x prefix)
+    const nullifierHashBN = ethers.BigNumber.from(nullifierHashStr);
+    const nullifierHash = ethers.utils.hexZeroPad(nullifierHashBN.toHexString(), 32);
+
+    console.log("=🔑 NullifierHash (string):", nullifierHashStr);
+    console.log("=🔑 NullifierHash (bytes32):", nullifierHash);
 
     // Validate proof format
     if (!Array.isArray(proof) || proof.length !== 8) {
@@ -168,10 +150,7 @@ async function executeIcebergWithdrawUsingProof(poolAddress, recipientAddress, n
     console.log("=� Network:", network.name);
     console.log("= NullifierHash:", nullifierHash);
     console.log("=� Recipient address:", recipientAddress);
-    console.log("=� Withdrawal amount:", ethers.utils.formatUnits(
-      amount,
-      tokenOut === ethers.constants.AddressZero ? 18 : 6
-    ), tokenOut === ethers.constants.AddressZero ? "ETH" : "Token");
+
     console.log("� Estimated cost:", ethers.utils.formatEther(estimatedCost), "ETH");
     console.log("\n� This is a mainnet real transaction, will consume real funds!");
     console.log(" Please confirm all information is correct");
@@ -201,35 +180,8 @@ async function executeIcebergWithdrawUsingProof(poolAddress, recipientAddress, n
       console.log("=� Withdrawal event:");
       console.log("  NullifierHash:", withdrawEvent.args.nullifierHash);
       console.log("  Recipient:", withdrawEvent.args.recipient);
-      console.log("  TokenOut:", withdrawEvent.args.tokenOut);
-      console.log("  Amount:", ethers.utils.formatUnits(
-        withdrawEvent.args.amount,
-        tokenOut === ethers.constants.AddressZero ? 18 : 6
-      ), tokenOut === ethers.constants.AddressZero ? "ETH" : "Token");
     }
 
-    // Check recipient address balance change
-    let newBalance;
-    if (tokenOut === ethers.constants.AddressZero) {
-      // ETH
-      newBalance = await signer.provider.getBalance(recipientAddress);
-      console.log("=� Recipient address new ETH balance:", ethers.utils.formatEther(newBalance), "ETH");
-    } else {
-      // ERC20 token
-      const ERC20ABI = [
-        "function balanceOf(address account) external view returns (uint256)"
-      ];
-      const tokenContract = new ethers.Contract(tokenOut, ERC20ABI, signer);
-      newBalance = await tokenContract.balanceOf(recipientAddress);
-      console.log("=� Recipient address new Token balance:", ethers.utils.formatUnits(newBalance, 6), "Token");
-    }
-
-    // Verify post-withdrawal status
-    const remainingSwapResult = await pool.getSwapResult(nullifierHash);
-    console.log("=� Remaining withdrawable amount:", ethers.utils.formatUnits(
-      remainingSwapResult.amount,
-      tokenOut === ethers.constants.AddressZero ? 18 : 6
-    ), tokenOut === ethers.constants.AddressZero ? "ETH" : "Token");
 
     console.log("\n<� Complete mainnet anonymous swap flow execution completed!");
     console.log(" User has successfully withdrawn funds to specified address");
@@ -242,9 +194,6 @@ async function executeIcebergWithdrawUsingProof(poolAddress, recipientAddress, n
       transactionHash: receipt.transactionHash,
       gasUsed: receipt.gasUsed.toString(),
       recipient: recipientAddress,
-      tokenOut: tokenOut,
-      amount: amount.toString(),
-      newBalance: newBalance.toString(),
       withdrawEvent: withdrawEvent ? {
         nullifierHash: withdrawEvent.args.nullifierHash,
         recipient: withdrawEvent.args.recipient,

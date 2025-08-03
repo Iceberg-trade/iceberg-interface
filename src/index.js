@@ -17,8 +17,8 @@ const {chains, provider, webSocketProvider} = configureChains(
       rpc: (chain) => {
         if (chain.id === 42161) {
           return {
-            http: 'https://arb1.arbitrum.io/rpc',
-            webSocket: 'wss://arb1.arbitrum.io/ws'
+            http: 'https://arbitrum.drpc.org',
+            webSocket: 'wss://arbitrum-one-rpc.publicnode.com'
           }
         }
         if (chain.id === 1) {
