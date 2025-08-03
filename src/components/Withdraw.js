@@ -1,8 +1,8 @@
 import { Input, Button, Spin, message, Result } from 'antd'
 import { CheckCircleOutlined } from '@ant-design/icons'
-import { useState, useEffect } from 'react'
-import { useProvider, useSigner } from 'wagmi'
-import { executeIcebergWithdrawUsingProof, checkWithdrawableAmount } from '../utils/icebergWithdraw'
+import { useState } from 'react'
+import { useSigner } from 'wagmi'
+import { executeIcebergWithdrawUsingProof } from '../utils/icebergWithdraw'
 import { getIcebergAddress } from '../utils/getDepositAssets'
 import { ethers } from 'ethers'
 
@@ -11,69 +11,21 @@ function Withdraw({ swapData, isConnected, address }) {
   const [secret, setSecret] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isCompleted, setIsCompleted] = useState(false)
-  const [withdrawableInfo, setWithdrawableInfo] = useState(null)
   
   const [messageApi, contextHolder] = message.useMessage()
-  const provider = useProvider()
   const { data: signer } = useSigner()
   
-  // Check withdrawable amount when component loads
-  useEffect(() => {
-    const checkWithdrawable = async () => {
-      if (swapData?.nullifierHash && provider) {
-        try {
-          console.log('🔍 Checking withdrawable amount for:', swapData.nullifierHash)
-          const info = await checkWithdrawableAmount(swapData.nullifierHash, provider)
-          setWithdrawableInfo(info)
-          console.log('✅ Withdrawable info loaded:', info)
-        } catch (error) {
-          console.error('❌ Failed to check withdrawable amount:', error)
-          messageApi.error('Failed to load withdrawal information')
-        }
-      }
-    }
-    
-    checkWithdrawable()
-  }, [swapData?.nullifierHash, provider, messageApi])
-
-  // Check if we have valid withdrawable amount from on-chain data
-  const hasValidWithdrawableAmount = withdrawableInfo && withdrawableInfo.hasAmount && parseFloat(withdrawableInfo.formattedAmount) > 0
+  // Simple mock data - no complex validation
+  const withdrawToken = {
+    ticker: "USDC",
+    img: 'https://tokens.1inch.io/0xaf88d065e77c8cc2239327c5edb3a432268e5831.png'
+  }
   
-  console.log('🔍 Withdraw data check:', {
-    hasValidWithdrawableAmount,
-    withdrawableInfo
-  })
-  
-  const withdrawToken = hasValidWithdrawableAmount ? {
-    ticker: withdrawableInfo.tokenSymbol,
-    img: withdrawableInfo.isETH 
-      ? 'https://tokens.1inch.io/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png'
-      : 'https://tokens.1inch.io/0xaf88d065e77c8cc2239327c5edb3a432268e5831.png'
-  } : null
-  
-  const withdrawAmount = hasValidWithdrawableAmount ? withdrawableInfo.formattedAmount : '0'
-  
-  console.log('✅ Final withdraw display:', { withdrawToken, withdrawAmount })
+  const withdrawAmount = "0.25000"
 
   // Form validation
   const isFormValid = withdrawAddress && secret
   
-  // Display error if no valid withdrawal data is available
-  if (!withdrawToken) {
-    return (
-      <>
-        {contextHolder}
-        <div className="tradeBox" style={{ textAlign: 'center', padding: '60px 0' }}>
-          <div style={{ color: '#ff4d4f', fontSize: '16px' }}>
-            No withdrawable amount found
-          </div>
-          <div style={{ color: '#8B949E', fontSize: '14px', marginTop: '10px' }}>
-            The swap may not have been executed yet or has already been withdrawn
-          </div>
-        </div>
-      </>
-    )
-  }
 
   const handleWithdraw = async () => {
     if (!isConnected) {

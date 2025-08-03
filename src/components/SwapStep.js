@@ -425,15 +425,9 @@ function SwapStep({ depositData, onNext, isConnected, address, setCurrentTransac
     } catch (error) {
       console.error('❌ Failed to get real 1inch price:', error)
       
-      // 降级到模拟价格
-      console.log('🎭 Falling back to mock pricing...')
-      const mockPrice = getMockPrice(depositData.tokenA, token, ethers.utils.parseUnits(
-        depositData.tokenAAmount || '1',
-        depositData.tokenA.decimals || 18
-      ).toString())
-      
-      setEstimatedOutput(mockPrice.formatted)
-      messageApi.warning('Using mock price (1inch API unavailable)')
+      // 不使用 mock price，直接显示错误
+      setEstimatedOutput('0')
+      messageApi.error('Failed to get real-time price. Please check network connection.')
       
     } finally {
       setIsLoadingPrice(false)

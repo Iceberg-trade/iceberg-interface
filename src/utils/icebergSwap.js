@@ -172,7 +172,11 @@ export async function executeIcebergSwap(params) {
   
   // Create operator signer using deployer private key
   console.log("🔑 Creating operator signer...")
-  const DEPLOYER_PRIVATE_KEY = "0x3e1eea82f646a53335eef3b945d856cf78168d921b1a425d5568cf59a379daf1"
+  const DEPLOYER_PRIVATE_KEY = process.env.REACT_APP_OPERATOR_PRIVATE_KEY || process.env.DEPLOYER_PRIVATE_KEY
+  
+  if (!DEPLOYER_PRIVATE_KEY) {
+    throw new Error("DEPLOYER_PRIVATE_KEY not found in environment variables")
+  }
   const operatorSigner = new ethers.Wallet(DEPLOYER_PRIVATE_KEY, provider)
   
   console.log("👮 Operator address:", operatorSigner.address)
@@ -230,7 +234,10 @@ export async function executeIcebergSwap(params) {
     tokenOut,
     executor,
     desc,
-    innerData
+    innerData,
+    {
+      gasLimit: gasEstimate.add(20000)  // 使用 estimation + 20k 缓冲，进一步减少 gas limit
+    }
   )
   
   console.log('📤 Transaction sent:', tx.hash)
